@@ -1,0 +1,24 @@
+{
+  "name": "youtube-livechat-emitter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nanikaka666/youtube-livechat-emitter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nanikaka666/youtube-livechat-emitter/issues"
+  },
+  "homepage": "https://github.com/nanikaka666/youtube-livechat-emitter#readme",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
