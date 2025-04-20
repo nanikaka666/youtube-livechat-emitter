@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "tsc && node ./dist/debug.js",
     "format-check": "prettier . --check",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "zodtest": "tsc && node ./dist/zodex.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "axios": "^1.8.4"
+    "axios": "^1.8.4",
+    "node-html-parser": "^7.0.1",
+    "zod": "^3.24.2"
   }
 }
