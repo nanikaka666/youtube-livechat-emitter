@@ -3,14 +3,15 @@ import z from "zod";
 export const textInRunsSchema = z.object({ text: z.string() });
 export type TextInRuns = z.infer<typeof textInRunsSchema>;
 
+export const thumbnailSchema = z.object({
+  url: z.string(),
+  width: z.coerce.number().optional(),
+  height: z.coerce.number().optional(),
+});
+export type Thumbnail = z.infer<typeof thumbnailSchema>;
+
 export const thumbnailsSchema = z.object({
-  thumbnails: z.array(
-    z.object({
-      url: z.string(),
-      width: z.coerce.number().optional(),
-      height: z.coerce.number().optional(),
-    }),
-  ),
+  thumbnails: z.array(thumbnailSchema),
 });
 export type Thumbnails = z.infer<typeof thumbnailsSchema.shape.thumbnails>;
 

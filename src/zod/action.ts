@@ -4,8 +4,13 @@ import {
   liveChatMembershipItemRendererSchema,
   liveChatModeChangeMessageRendererSchema,
   liveChatPaidMessageRendererSchema,
+  liveChatPaidStickerRendererSchema,
+  liveChatPlaceholderItemRendererSchema,
+  liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema,
+  liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema,
   liveChatTextMessageRendererSchema,
   liveChatTickerPaidMessageItemRendererSchema,
+  liveChatTickerPaidStickerItemRendererSchema,
   liveChatTickerSponsorItemRendererSchema,
   liveChatViewerEngagementMessageRendererSchema,
 } from "./renderer";
@@ -18,7 +23,10 @@ export const addChatItemActionSchema = z.object({
       liveChatPaidMessageRendererSchema,
       liveChatMembershipItemRendererSchema,
       liveChatModeChangeMessageRendererSchema,
-      z.object({}).passthrough(),
+      liveChatPlaceholderItemRendererSchema,
+      liveChatPaidStickerRendererSchema,
+      liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema,
+      liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema,
     ]),
   }),
 });
@@ -52,11 +60,39 @@ export const addLiveChatTickerItemActionSchema = z.object({
     item: z.union([
       liveChatTickerPaidMessageItemRendererSchema,
       liveChatTickerSponsorItemRendererSchema,
+      liveChatTickerPaidStickerItemRendererSchema,
     ]),
   }),
 });
 export type AddLiveChatTickerItemAction = z.infer<
   typeof addLiveChatTickerItemActionSchema.shape.addLiveChatTickerItemAction
+>;
+
+export const removeBannerForLiveChatCommandSchema = z.object({
+  removeBannerForLiveChatCommand: z.object({
+    targetActionId: z.string(),
+  }),
+});
+export type RemoveBannerForLiveChatCommand = z.infer<
+  typeof removeBannerForLiveChatCommandSchema.shape.removeBannerForLiveChatCommand
+>;
+
+export const removeChatItemByAuthorActionSchema = z.object({
+  removeChatItemByAuthorAction: z.object({
+    externalChannelId: z.string(),
+  }),
+});
+export type RemoveChatItemByAuthorAction = z.infer<
+  typeof removeChatItemByAuthorActionSchema.shape.removeChatItemByAuthorAction
+>;
+
+export const replaceChatItemActionSchema = z.object({
+  replaceChatItemAction: z.object({
+    targetItemId: z.string(),
+  }),
+});
+export type ReplaceChatItemAction = z.infer<
+  typeof replaceChatItemActionSchema.shape.replaceChatItemAction
 >;
 
 export const actionsSchema = z.array(
@@ -66,7 +102,9 @@ export const actionsSchema = z.array(
     liveChatReportModerationStateCommandSchema,
     addBannerToLiveChatCommandSchema,
     addLiveChatTickerItemActionSchema,
-    z.object({}).passthrough(),
+    removeBannerForLiveChatCommandSchema,
+    removeChatItemByAuthorActionSchema,
+    replaceChatItemActionSchema,
   ]),
 );
 export type Actions = z.infer<typeof actionsSchema>; // Action
