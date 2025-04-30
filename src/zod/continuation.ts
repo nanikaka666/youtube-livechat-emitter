@@ -38,7 +38,6 @@ export const continuationsSchema = z
       invalidationContinuationDataSchema,
       timedContinuationDataSchema,
       reloadContinuationDataSchema,
-      z.object({}).passthrough(), // for debug
     ]),
   )
   .nonempty();

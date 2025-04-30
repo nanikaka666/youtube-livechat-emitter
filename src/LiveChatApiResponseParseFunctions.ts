@@ -1,54 +1,23 @@
-import {
-  Continuations,
-  invalidationContinuationDataSchema,
-  reloadContinuationDataSchema,
-  timedContinuationDataSchema,
-} from "./zod/continuation";
+import { Continuations } from "./zod/continuation";
 
 export function getNextContinuation(continuations: Continuations): string | undefined {
-  if (continuations.length === 0) {
+  const continuation = [...continuations].shift();
+  if (!continuation) {
     return undefined;
   }
-  const continuation = [...continuations].shift();
-  const maybeInvalidation = invalidationContinuationDataSchema.safeParse(continuation);
-  if (maybeInvalidation.success) {
-    return maybeInvalidation.data.invalidationContinuationData.continuation;
+  if ("invalidationContinuationData" in continuation) {
+    return continuation.invalidationContinuationData.continuation;
+  } else if ("timedContinuationData" in continuation) {
+    return continuation.timedContinuationData.continuation;
+  } else if ("reloadContinuationData" in continuation) {
+    return continuation.reloadContinuationData.continuation;
+  } else {
+    throw new UnknownContinuationError(continuation);
   }
-  const maybeTimed = timedContinuationDataSchema.safeParse(continuation);
-  if (maybeTimed.success) {
-    return maybeTimed.data.timedContinuationData.continuation;
+}
+
+export class UnknownContinuationError extends Error {
+  constructor(value: never, message = `Unknown continuation is detected. ${value}`) {
+    super(message);
   }
-  const maybeReload = reloadContinuationDataSchema.safeParse(continuation);
-  if (maybeReload.success) {
-    return maybeReload.data.reloadContinuationData.continuation;
-  }
-  console.log("UNKNOWN Continuations:", continuation);
 }
-
-export interface Membership {
-  thumbnail?: URL;
-  tooltip: string;
-}
-
-export interface Author {
-  channelId: string;
-  name: string;
-  thumbnail: URL;
-  isOwner: boolean;
-  isModerator: boolean;
-  membership?: Membership;
-}
-
-export interface Chat {
-  id: string;
-  timestampUsec: number;
-  author: Author;
-  messages: Messages;
-  paidAmount?: string;
-}
-
-export interface Emoji {
-  image: URL;
-}
-
-export type Messages = (string | Emoji)[];
