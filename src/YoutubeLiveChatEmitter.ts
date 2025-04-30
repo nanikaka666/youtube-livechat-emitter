@@ -1,7 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import axios from "axios";
-import { GetLiveChatApiRequestPayload, getRequestPayload } from "./PageParseFunctions";
+import { getRequestPayload } from "./PageParseFunctions";
 import { Continuations, getLiveChatApiResponseSchema } from "./zod/continuation";
 import fs from "node:fs";
 import { getNextContinuation } from "./LiveChatApiResponseParseFunctions";
@@ -33,6 +32,7 @@ import {
   parseLiveChatTickerSponsorItemRenderer,
 } from "./RendererParseFunctions";
 import { printApiResponse } from "./zod/printFunctions";
+import { fetchLiveChatApi } from "./infrastructure/fetch";
 
 export type LiveChatEvent = {
   start: () => void;
@@ -202,26 +202,15 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     }
 
     try {
-      const res = await axios.post(
-        `https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?key=${this.#payload.apiKey}`,
-        {
-          context: {
-            client: {
-              clientName: this.#payload.clientName,
-              clientVersion: this.#payload.clientVersion,
-            },
-          },
-          continuation: this.#payload.continuation,
-        },
-      );
+      const res = await fetchLiveChatApi(this.#payload);
 
       if (this.#isWriteFile) {
         fs.writeFileSync(
           `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
-          JSON.stringify(res.data),
+          JSON.stringify(res),
         );
       }
-      const apiResponse = getLiveChatApiResponseSchema.parse(res.data);
+      const apiResponse = getLiveChatApiResponseSchema.parse(res);
       //   printApiResponse(apiResponse);
 
       this.#updateContinuation(apiResponse.continuationContents.liveChatContinuation.continuations);
@@ -233,7 +222,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       if (err instanceof Error) {
         this.emit("error", err);
       } else {
-        throw err;
+        this.emit("error", new Error());
       }
     } finally {
       if (this.#status === "activated") {
@@ -266,4 +255,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     this.#status = "closed";
     this.emit("end");
   }
+}
+export interface GetLiveChatApiRequestPayload {
+  continuation: string;
+  readonly apiKey: string;
+  readonly clientName: string;
+  readonly clientVersion: string;
 }

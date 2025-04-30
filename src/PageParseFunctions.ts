@@ -1,15 +1,9 @@
-import axios from "axios";
 import { parse } from "node-html-parser";
-
-export interface GetLiveChatApiRequestPayload {
-  continuation: string;
-  readonly apiKey: string;
-  readonly clientName: string;
-  readonly clientVersion: string;
-}
+import { fetchLivePage } from "./infrastructure/fetch";
+import { GetLiveChatApiRequestPayload } from "./YoutubeLiveChatEmitter";
 
 export async function getRequestPayload(channelId: string) {
-  const rawHtml = await getLivePageHtml(channelId);
+  const rawHtml = await fetchLivePage(channelId);
 
   const videoId = getVideoId(rawHtml);
   if (videoId === undefined) {
@@ -20,14 +14,6 @@ export async function getRequestPayload(channelId: string) {
     throw new Error("Failed extracting payload data.");
   }
   return requestPayload;
-}
-
-async function getLivePageHtml(channelId: string): Promise<string> {
-  const channelUrl = channelId.startsWith("@")
-    ? `https://www.youtube.com/${channelId}/live`
-    : `https://www.youtube.com/channel/${channelId}/live`;
-  const maybeLivePage = await axios.get(channelUrl);
-  return maybeLivePage.data as string;
 }
 
 function makeRequestPayload(html: string): GetLiveChatApiRequestPayload | undefined {
