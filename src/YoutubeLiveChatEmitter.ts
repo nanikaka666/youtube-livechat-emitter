@@ -31,8 +31,8 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "./RendererParseFunctions";
-import { printApiResponse } from "./zod/printFunctions";
 import { fetchLiveChatApi } from "./infrastructure/fetch";
+import { UnknownJsonDataError } from "./core/errors";
 
 export type LiveChatEvent = {
   start: () => void;
@@ -101,6 +101,8 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         this.emit("blockUser", action.removeChatItemByAuthorAction.externalChannelId);
       } else if ("replaceChatItemAction" in action) {
         // do nothing
+      } else {
+        throw new UnknownJsonDataError(action, `Unknown action detected. ${action}`);
       }
     });
   }
@@ -140,11 +142,17 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
           action.item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
         ),
       );
+    } else if ("liveChatViewerEngagementMessageRenderer" in action.item) {
+      // do nothing.
+    } else if ("liveChatModeChangeMessageRenderer" in action.item) {
+      // do nothing.
+    } else if ("liveChatPlaceholderItemRenderer" in action.item) {
+      // do nothing.
     } else {
-      // do nothing with these renderers.
-      //   liveChatViewerEngagementMessageRendererSchema,
-      //   liveChatModeChangeMessageRendererSchema,
-      //   liveChatPlaceholderItemRendererSchema,
+      throw new UnknownJsonDataError(
+        action.item,
+        `Unknown addChatItemAction detected. ${action.item}`,
+      );
     }
   }
 
@@ -157,16 +165,24 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #handleAddBannerToLiveChatCommand(action: AddBannerToLiveChatCommand) {
-    if (
-      action.bannerRenderer.liveChatBannerRenderer.bannerType ===
-        "LIVE_CHAT_BANNER_TYPE_PINNED_MESSAGE" &&
-      "liveChatTextMessageRenderer" in action.bannerRenderer.liveChatBannerRenderer.contents
-    ) {
-      const item = parseLiveChatTextMessageRenderer(
-        action.bannerRenderer.liveChatBannerRenderer.contents.liveChatTextMessageRenderer,
+    const { bannerType } = action.bannerRenderer.liveChatBannerRenderer;
+    if (bannerType === "LIVE_CHAT_BANNER_TYPE_PINNED_MESSAGE") {
+      if ("liveChatTextMessageRenderer" in action.bannerRenderer.liveChatBannerRenderer.contents) {
+        const item = parseLiveChatTextMessageRenderer(
+          action.bannerRenderer.liveChatBannerRenderer.contents.liveChatTextMessageRenderer,
+        );
+        this.#pinnedItem.set(action.bannerRenderer.liveChatBannerRenderer.actionId, item);
+        this.emit("pinned", item);
+      }
+    } else if (bannerType === "LIVE_CHAT_BANNER_TYPE_CHAT_SUMMARY") {
+      // do nothing.
+    } else if (bannerType === "LIVE_CHAT_BANNER_TYPE_CROSS_CHANNEL_REDIRECT") {
+      // do nothing.
+    } else {
+      throw new UnknownJsonDataError(
+        bannerType,
+        `Unknown addBannerToLiveChatCommand detected. ${action}`,
       );
-      this.#pinnedItem.set(action.bannerRenderer.liveChatBannerRenderer.actionId, item);
-      this.emit("pinned", item);
     }
   }
 
@@ -183,12 +199,17 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         "addTicker",
         parseLiveChatTickerSponsorItemRenderer(action.item.liveChatTickerSponsorItemRenderer),
       );
-    } else {
+    } else if ("liveChatTickerPaidStickerItemRenderer" in action.item) {
       this.emit(
         "addTicker",
         parseLiveChatTickerPaidStickerItemRenderer(
           action.item.liveChatTickerPaidStickerItemRenderer,
         ),
+      );
+    } else {
+      throw new UnknownJsonDataError(
+        action.item,
+        `Unknown addLiveChatTickerItemAction detected. ${action.item}`,
       );
     }
   }
@@ -211,7 +232,6 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         );
       }
       const apiResponse = getLiveChatApiResponseSchema.parse(res);
-      //   printApiResponse(apiResponse);
 
       this.#updateContinuation(apiResponse.continuationContents.liveChatContinuation.continuations);
 
@@ -222,7 +242,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       if (err instanceof Error) {
         this.emit("error", err);
       } else {
-        this.emit("error", new Error());
+        this.emit("error", new Error("Failed execute."));
       }
     } finally {
       if (this.#status === "activated") {

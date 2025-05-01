@@ -1,3 +1,4 @@
+import { UnknownJsonDataError } from "./core/errors";
 import { Continuations } from "./zod/continuation";
 
 export function getNextContinuation(continuations: Continuations): string | undefined {
@@ -12,12 +13,9 @@ export function getNextContinuation(continuations: Continuations): string | unde
   } else if ("reloadContinuationData" in continuation) {
     return continuation.reloadContinuationData.continuation;
   } else {
-    throw new UnknownContinuationError(continuation);
-  }
-}
-
-export class UnknownContinuationError extends Error {
-  constructor(value: never, message = `Unknown continuation is detected. ${value}`) {
-    super(message);
+    throw new UnknownJsonDataError(
+      continuation,
+      `Unknown continuation is detected. ${continuation}`,
+    );
   }
 }
