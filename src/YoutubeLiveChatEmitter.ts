@@ -173,6 +173,8 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         );
         this.#pinnedItem.set(action.bannerRenderer.liveChatBannerRenderer.actionId, item);
         this.emit("pinned", item);
+      } else {
+        this.emit("error", new Error("Unknown Pinned message type detected."));
       }
     } else if (bannerType === "LIVE_CHAT_BANNER_TYPE_CHAT_SUMMARY") {
       // do nothing.
@@ -272,8 +274,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   close() {
-    this.#status = "closed";
-    this.emit("end");
+    if (this.#status === "activated") {
+      this.#status = "closed";
+      this.emit("end");
+    }
   }
 }
 export interface GetLiveChatApiRequestPayload {
