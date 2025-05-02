@@ -33,14 +33,16 @@ import {
 } from "./RendererParseFunctions";
 import { fetchLiveChatApi } from "./infrastructure/fetch";
 import { UnknownJsonDataError } from "./core/errors";
+import { ChannelId } from "./core/ChannelId";
+import { LiveChatItemId } from "./core/LiveChatItemId";
 
 export type LiveChatEvent = {
   start: () => void;
   end: () => void;
   error: (error: Error) => void;
   addChat: (item: LiveChatItem) => void;
-  removeChat: (id: string) => void;
-  blockUser: (channelId: string) => void;
+  removeChat: (id: LiveChatItemId) => void;
+  blockUser: (channelId: ChannelId) => void;
   pinned: (item: ChatItemText) => void;
   unpinned: (item?: ChatItemText) => void;
   memberships: (item: MembershipItem) => void;
@@ -52,7 +54,7 @@ export type LiveChatEvent = {
 export type EmitterStatus = "inactivated" | "activated" | "closed";
 
 export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmitter<LiveChatEvent>) {
-  readonly #channelId: string;
+  readonly #channelId: ChannelId;
   readonly #timeoutMilliSeconds: number;
   readonly #isWriteFile: boolean;
   #payload?: GetLiveChatApiRequestPayload;
@@ -65,7 +67,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     isWriteFile: boolean = false,
   ) {
     super();
-    this.#channelId = channelId;
+    this.#channelId = new ChannelId(channelId);
     this.#timeoutMilliSeconds = timeoutMilliSeconds;
     this.#isWriteFile = isWriteFile;
     this.#status = "inactivated";
@@ -98,7 +100,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         this.emit("unpinned", this.#pinnedItem.get(actionId));
         this.#pinnedItem.delete(actionId);
       } else if ("removeChatItemByAuthorAction" in action) {
-        this.emit("blockUser", action.removeChatItemByAuthorAction.externalChannelId);
+        this.emit(
+          "blockUser",
+          new ChannelId(action.removeChatItemByAuthorAction.externalChannelId),
+        );
       } else if ("replaceChatItemAction" in action) {
         // do nothing
       } else {
@@ -157,7 +162,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #handleRemoveChatItemAction(action: RemoveChatItemAction) {
-    this.emit("removeChat", action.targetItemId);
+    this.emit("removeChat", new LiveChatItemId(action.targetItemId));
   }
 
   #handleLiveChatReportModerationStateCommand(action: LiveChatReportModerationStateCommand) {

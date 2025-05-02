@@ -1,8 +1,9 @@
 import { parse } from "node-html-parser";
 import { fetchLivePage } from "./infrastructure/fetch";
 import { GetLiveChatApiRequestPayload } from "./YoutubeLiveChatEmitter";
+import { ChannelId } from "./core/ChannelId";
 
-export async function getRequestPayload(channelId: string) {
+export async function getRequestPayload(channelId: ChannelId) {
   const rawHtml = await fetchLivePage(channelId);
 
   const videoId = getVideoId(rawHtml);

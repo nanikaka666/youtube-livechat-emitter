@@ -1,3 +1,5 @@
+import { ChannelId } from "./core/ChannelId";
+import { LiveChatItemId } from "./core/LiveChatItemId";
 import {
   Author,
   AuthorType,
@@ -38,7 +40,7 @@ export function parseLiveChatTextMessageRenderer(
 ): ChatItemText {
   return {
     type: "text",
-    id: renderer.id,
+    id: new LiveChatItemId(renderer.id),
     timestamp: renderer.timestampUsec,
     author: makeAuthor(
       renderer.authorExternalChannelId,
@@ -53,7 +55,7 @@ export function parseLiveChatTextMessageRenderer(
 export function parseLiveChatPaidMessageRenderer(renderer: LiveChatPaidMessageRenderer) {
   const res: ChatItemSuperChat = {
     type: "superChat",
-    id: renderer.id,
+    id: new LiveChatItemId(renderer.id),
     timestamp: renderer.timestampUsec,
     author: makeAuthor(
       renderer.authorExternalChannelId,
@@ -76,7 +78,7 @@ export function parseLiveChatPaidMessageRenderer(renderer: LiveChatPaidMessageRe
 export function parseLiveChatPaidStickerRenderer(renderer: LiveChatPaidStickerRenderer) {
   const res: ChatItemSuperSticker = {
     type: "superSticker",
-    id: renderer.id,
+    id: new LiveChatItemId(renderer.id),
     timestamp: renderer.timestampUsec,
     author: makeAuthor(
       renderer.authorExternalChannelId,
@@ -101,7 +103,7 @@ export function parseLiveChatMembershipItemRenderer(
     // milestone
     const res: MembershipMilestone = {
       type: "milestone",
-      id: renderer.id,
+      id: new LiveChatItemId(renderer.id),
       timestamp: renderer.timestampUsec,
       author: makeAuthor(
         renderer.authorExternalChannelId,
@@ -122,7 +124,7 @@ export function parseLiveChatMembershipItemRenderer(
         : parseMessage(renderer.headerSubtext);
     return {
       type: "new",
-      id: renderer.id,
+      id: new LiveChatItemId(renderer.id),
       timestamp: renderer.timestampUsec,
       author: makeAuthor(
         renderer.authorExternalChannelId,
@@ -154,7 +156,7 @@ export function parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(
   renderer: LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
 ): GiftRedemption {
   return {
-    id: renderer.id,
+    id: new LiveChatItemId(renderer.id),
     timestamp: renderer.timestampUsec,
     author: makeAuthor(
       renderer.authorExternalChannelId,
@@ -173,7 +175,7 @@ function makeAuthor(
   authorBadges?: AuthorBadges,
 ): Author {
   return {
-    channelId: authorExternalChannelId,
+    channelId: new ChannelId(authorExternalChannelId),
     name: authorName.simpleText,
     thumbnails: parseThumbnails(authorPhoto),
     authorType: getAuthorType(authorBadges),

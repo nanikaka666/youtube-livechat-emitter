@@ -1,5 +1,6 @@
 import axios from "axios";
 import { GetLiveChatApiRequestPayload } from "../YoutubeLiveChatEmitter";
+import { ChannelId } from "../core/ChannelId";
 
 export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): Promise<any> {
   const res = await axios.post(
@@ -17,10 +18,10 @@ export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): P
   return res.data;
 }
 
-export async function fetchLivePage(channelId: string): Promise<string> {
-  const channelUrl = channelId.startsWith("@")
-    ? `https://www.youtube.com/${channelId}/live`
-    : `https://www.youtube.com/channel/${channelId}/live`;
+export async function fetchLivePage(channelId: ChannelId): Promise<string> {
+  const channelUrl = channelId.isHandle
+    ? `https://www.youtube.com/${channelId.id}/live`
+    : `https://www.youtube.com/channel/${channelId.id}/live`;
   const res = await axios.get(channelUrl);
   return res.data as string;
 }

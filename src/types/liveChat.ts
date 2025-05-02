@@ -1,3 +1,6 @@
+import { ChannelId } from "../core/ChannelId";
+import { LiveChatItemId } from "../core/LiveChatItemId";
+
 export interface ImageSize {
   width: number;
   height: number;
@@ -11,7 +14,7 @@ export interface Image {
 export type AuthorType = "owner" | "moderator" | "general";
 
 export interface Author {
-  channelId: string;
+  channelId: ChannelId;
   name: string;
   thumbnails: Image[];
   authorType: AuthorType;
@@ -101,7 +104,7 @@ export type Color =
 
 export interface ChatItemText {
   type: "text";
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages: MessageItem[];
@@ -109,7 +112,7 @@ export interface ChatItemText {
 
 export interface ChatItemSuperChat {
   type: "superChat";
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages?: MessageItem[];
@@ -118,7 +121,7 @@ export interface ChatItemSuperChat {
 
 export interface ChatItemSuperSticker {
   type: "superSticker";
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages?: MessageItem[];
@@ -129,7 +132,7 @@ export type LiveChatItem = ChatItemText | ChatItemSuperChat | ChatItemSuperStick
 
 export interface NewMembership {
   type: "new";
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages: MessageItem[];
@@ -137,7 +140,7 @@ export interface NewMembership {
 
 export interface MembershipMilestone {
   type: "milestone";
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages?: MessageItem[];
@@ -153,7 +156,7 @@ export interface SponsorshipsGift {
 }
 
 export interface GiftRedemption {
-  id: string;
+  id: LiveChatItemId;
   timestamp: number;
   author: Author;
   messages: MessageItem[];
