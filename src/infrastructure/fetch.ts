@@ -8,7 +8,7 @@ export interface GetLiveChatApiRequestPayload {
   readonly clientVersion: string;
 }
 
-export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): Promise<any> {
+export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): Promise<string> {
   const res = await axios.post(
     `https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?key=${payload.apiKey}`,
     {
@@ -21,7 +21,7 @@ export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): P
       continuation: payload.continuation,
     },
   );
-  return res.data;
+  return res.data as string;
 }
 
 export async function fetchLivePage(channelId: ChannelId): Promise<string> {
