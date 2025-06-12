@@ -31,7 +31,7 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "./RendererParseFunctions";
-import { fetchLiveChatApi } from "./infrastructure/fetch";
+import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "./infrastructure/fetch";
 import { UnknownJsonDataError } from "./core/errors";
 import { ChannelId } from "./core/ChannelId";
 import { LiveChatItemId } from "./core/LiveChatItemId";
@@ -51,7 +51,7 @@ export type LiveChatEvent = {
   addTicker: (item: TickerItem) => void;
 };
 
-export type EmitterStatus = "inactivated" | "activated" | "closed";
+type EmitterStatus = "inactivated" | "activated" | "closed";
 
 export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmitter<LiveChatEvent>) {
   readonly #channelId: ChannelId;
@@ -284,10 +284,4 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       this.emit("end");
     }
   }
-}
-export interface GetLiveChatApiRequestPayload {
-  continuation: string;
-  readonly apiKey: string;
-  readonly clientName: string;
-  readonly clientVersion: string;
 }

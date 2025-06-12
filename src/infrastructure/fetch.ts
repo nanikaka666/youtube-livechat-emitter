@@ -1,6 +1,12 @@
 import axios from "axios";
-import { GetLiveChatApiRequestPayload } from "../YoutubeLiveChatEmitter";
 import { ChannelId } from "../core/ChannelId";
+
+export interface GetLiveChatApiRequestPayload {
+  continuation: string;
+  readonly apiKey: string;
+  readonly clientName: string;
+  readonly clientVersion: string;
+}
 
 export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): Promise<any> {
   const res = await axios.post(
