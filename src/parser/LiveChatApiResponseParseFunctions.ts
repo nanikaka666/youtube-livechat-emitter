@@ -1,5 +1,5 @@
-import { UnknownJsonDataError } from "./core/errors";
-import { Continuations } from "./zod/continuation";
+import { UnknownJsonDataError } from "../core/errors";
+import { Continuations } from "../zod/continuation";
 
 export function getNextContinuation(continuations: Continuations): string | undefined {
   const continuation = [...continuations].shift();

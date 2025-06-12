@@ -1,6 +1,6 @@
-import { ChannelId } from "./core/ChannelId";
-import { UnknownJsonDataError } from "./core/errors";
-import { LiveChatItemId } from "./core/LiveChatItemId";
+import { ChannelId } from "../core/ChannelId";
+import { UnknownJsonDataError } from "../core/errors";
+import { LiveChatItemId } from "../core/LiveChatItemId";
 import {
   Author,
   AuthorType,
@@ -21,8 +21,8 @@ import {
   SuperChatTicker,
   SuperStickerTicker,
   TextMessage,
-} from "./types/liveChat";
-import { AuthorName, Message, Thumbnail, Thumbnails } from "./zod/common";
+} from "../types/liveChat";
+import { AuthorName, Message, Thumbnail, Thumbnails } from "../zod/common";
 import {
   AuthorBadges,
   LiveChatMembershipItemRenderer,
@@ -34,7 +34,7 @@ import {
   LiveChatTickerPaidMessageItemRenderer,
   LiveChatTickerPaidStickerItemRenderer,
   LiveChatTickerSponsorItemRenderer,
-} from "./zod/renderer";
+} from "../zod/renderer";
 
 export function parseLiveChatTextMessageRenderer(
   renderer: LiveChatTextMessageRenderer,

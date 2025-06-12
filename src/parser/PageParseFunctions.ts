@@ -1,7 +1,7 @@
 import { parse } from "node-html-parser";
-import { fetchLivePage } from "./infrastructure/fetch";
-import { GetLiveChatApiRequestPayload } from "./infrastructure/fetch";
-import { ChannelId } from "./core/ChannelId";
+import { fetchLivePage } from "../infrastructure/fetch";
+import { GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { ChannelId } from "../core/ChannelId";
 
 export async function getRequestPayload(channelId: ChannelId) {
   const rawHtml = await fetchLivePage(channelId);

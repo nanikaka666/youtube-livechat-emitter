@@ -1,9 +1,9 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { getRequestPayload } from "./PageParseFunctions";
+import { getRequestPayload } from "./parser/PageParseFunctions";
 import { Continuations, getLiveChatApiResponseSchema } from "./zod/continuation";
 import fs from "node:fs";
-import { getNextContinuation } from "./LiveChatApiResponseParseFunctions";
+import { getNextContinuation } from "./parser/LiveChatApiResponseParseFunctions";
 import {
   Actions,
   AddBannerToLiveChatCommand,
@@ -30,7 +30,7 @@ import {
   parseLiveChatTickerPaidMessageItemRenderer,
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
-} from "./RendererParseFunctions";
+} from "./parser/RendererParseFunctions";
 import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "./infrastructure/fetch";
 import { UnknownJsonDataError } from "./core/errors";
 import { ChannelId } from "./core/ChannelId";
