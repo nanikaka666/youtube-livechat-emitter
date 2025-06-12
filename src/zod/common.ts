@@ -47,5 +47,5 @@ export const authorNameSchema = z
   .object({
     simpleText: z.string(),
   })
-  .default({ simpleText: "" }); // if username is empty, then authorName property will be omitted.
+  .default({ simpleText: "" }); // if username is empty, then authorName property will be omitted. to handle this case easier, use default value with blank.
 export type AuthorName = z.infer<typeof authorNameSchema>;
