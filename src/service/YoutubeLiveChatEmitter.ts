@@ -1,9 +1,9 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { getRequestPayload } from "./parser/PageParseFunctions";
-import { Continuations, getLiveChatApiResponseSchema } from "./zod/continuation";
+import { getRequestPayload } from "../parser/LivePageParser";
+import { Continuations, getLiveChatApiResponseSchema } from "../zod/continuation";
 import fs from "node:fs";
-import { getNextContinuation } from "./parser/LiveChatApiResponseParseFunctions";
+import { getNextContinuation } from "../parser/LiveChatApiResponseParser";
 import {
   Actions,
   AddBannerToLiveChatCommand,
@@ -11,7 +11,7 @@ import {
   AddLiveChatTickerItemAction,
   LiveChatReportModerationStateCommand,
   RemoveChatItemAction,
-} from "./zod/action";
+} from "../zod/action";
 import {
   ChatItemText,
   GiftRedemption,
@@ -19,7 +19,7 @@ import {
   MembershipItem,
   SponsorshipsGift,
   TickerItem,
-} from "./types/liveChat";
+} from "../types/liveChat";
 import {
   parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
@@ -30,11 +30,11 @@ import {
   parseLiveChatTickerPaidMessageItemRenderer,
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
-} from "./parser/RendererParseFunctions";
-import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "./infrastructure/fetch";
-import { UnknownJsonDataError } from "./core/errors";
-import { ChannelId } from "./core/ChannelId";
-import { LiveChatItemId } from "./core/LiveChatItemId";
+} from "../parser/RendererParser";
+import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { UnknownJsonDataError } from "../core/errors";
+import { ChannelId } from "../core/ChannelId";
+import { LiveChatItemId } from "../core/LiveChatItemId";
 
 export type LiveChatEvent = {
   start: () => void;

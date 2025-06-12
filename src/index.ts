@@ -1,2 +1,2 @@
-import { YoutubeLiveChatEmitter } from "./YoutubeLiveChatEmitter";
+import { YoutubeLiveChatEmitter } from "./service/YoutubeLiveChatEmitter";
 export { YoutubeLiveChatEmitter };
