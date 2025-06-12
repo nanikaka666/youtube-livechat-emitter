@@ -1,4 +1,5 @@
 import { ChannelId } from "./core/ChannelId";
+import { UnknownJsonDataError } from "./core/errors";
 import { LiveChatItemId } from "./core/LiveChatItemId";
 import {
   Author,
@@ -222,7 +223,7 @@ export function parseLiveChatTickerSponsorItemRenderer(
       messages: messages,
       item: parseLiveChatMembershipItemRenderer(innerRenderer.liveChatMembershipItemRenderer),
     };
-  } else {
+  } else if ("liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in innerRenderer) {
     return {
       type: "gift",
       durationSec: renderer.durationSec,
@@ -231,6 +232,8 @@ export function parseLiveChatTickerSponsorItemRenderer(
         innerRenderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
       ),
     };
+  } else {
+    throw new UnknownJsonDataError(innerRenderer, `Unknown type detected. ${innerRenderer}`);
   }
 }
 
