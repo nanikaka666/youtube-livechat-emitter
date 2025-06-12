@@ -242,6 +242,7 @@ function parseThumbnails(thumbnails: Thumbnails): Image[] {
 }
 
 function parseThumbnail(thumbnail: Thumbnail): Image {
+  // by my observation, "https:" string is dropped in case of super sticker's image url.
   const res: Image = {
     url: thumbnail.url.startsWith("https:") ? thumbnail.url : "https:" + thumbnail.url,
   };
