@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "tsc && node ./dist/debug.js",
     "format-check": "prettier . --check",
-    "format": "prettier . --write",
-    "zodtest": "tsc && node ./dist/zodex.js"
+    "format": "prettier . --write"
   },
   "repository": {
     "type": "git",
