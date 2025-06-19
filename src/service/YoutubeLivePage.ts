@@ -1,9 +1,9 @@
 import { parse } from "node-html-parser";
 import { get } from "../infrastructure/fetch";
-import { GetLiveChatApiRequestPayload } from "./YoutubeLiveChatApi";
+import { GetLiveChatApiPayloadBaseData } from "./YoutubeLiveChatApi";
 import { ChannelId } from "../core/ChannelId";
 
-export async function getRequestPayload(channelId: ChannelId) {
+export async function getPayloadBaseData(channelId: ChannelId) {
   const livePageUrl = channelId.isHandle
     ? `https://www.youtube.com/${channelId.id}/live`
     : `https://www.youtube.com/channel/${channelId.id}/live`;
@@ -13,14 +13,14 @@ export async function getRequestPayload(channelId: ChannelId) {
   if (videoId === undefined) {
     throw new Error("No live streaming.");
   }
-  const requestPayload = makeRequestPayload(rawHtml);
-  if (requestPayload === undefined) {
+  const payloadBaseData = makePayloadBaseData(rawHtml);
+  if (payloadBaseData === undefined) {
     throw new Error("Failed extracting payload data.");
   }
-  return requestPayload;
+  return payloadBaseData;
 }
 
-function makeRequestPayload(html: string): GetLiveChatApiRequestPayload | undefined {
+function makePayloadBaseData(html: string): GetLiveChatApiPayloadBaseData | undefined {
   const continuation = getContinuation(html);
   const apiKey = getInnertubeApiKey(html);
   const clientName = getInnertubeClientName(html);

@@ -6,7 +6,7 @@ import {
   getLiveChatApiResponseSchema,
 } from "../zod/continuation";
 
-export interface GetLiveChatApiRequestPayload {
+export interface GetLiveChatApiPayloadBaseData {
   continuation: string;
   readonly apiKey: string;
   readonly clientName: string;
@@ -33,17 +33,17 @@ export function getNextContinuation(continuations: Continuations): string | unde
 }
 
 export async function fetchGetLiveChatApiResponse(
-  payload: GetLiveChatApiRequestPayload,
+  baseData: GetLiveChatApiPayloadBaseData,
 ): Promise<GetLiveChatApiResponse> {
-  const apiUrl = `https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?key=${payload.apiKey}`;
+  const apiUrl = `https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?key=${baseData.apiKey}`;
   const postPayload = {
     context: {
       client: {
-        clientName: payload.clientName,
-        clientVersion: payload.clientVersion,
+        clientName: baseData.clientName,
+        clientVersion: baseData.clientVersion,
       },
     },
-    continuation: payload.continuation,
+    continuation: baseData.continuation,
   };
 
   const res = await fetchLiveChatApi(apiUrl, postPayload);

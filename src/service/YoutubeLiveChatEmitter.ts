@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { getRequestPayload } from "./YoutubeLivePage";
+import { getPayloadBaseData } from "./YoutubeLivePage";
 import { Continuations } from "../zod/continuation";
 import { fetchGetLiveChatApiResponse, getNextContinuation } from "./YoutubeLiveChatApi";
 import {
@@ -30,7 +30,7 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "../parser/RendererParser";
-import { GetLiveChatApiRequestPayload } from "./YoutubeLiveChatApi";
+import { GetLiveChatApiPayloadBaseData } from "./YoutubeLiveChatApi";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";
@@ -56,7 +56,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   readonly #channelId: ChannelId;
   readonly #timeoutMilliSeconds: number;
   readonly #isWriteFile: boolean;
-  #payload?: GetLiveChatApiRequestPayload;
+  #baseData?: GetLiveChatApiPayloadBaseData;
   #status: EmitterStatus;
   #pinnedItem: Map<string, ChatItemText>;
 
@@ -74,10 +74,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #updateContinuation(continuations: Continuations) {
-    if (this.#payload === undefined) {
+    if (this.#baseData === undefined) {
       throw new Error("payload is undefined when updating continuation.");
     }
-    this.#payload.continuation = getNextContinuation(continuations) ?? this.#payload.continuation;
+    this.#baseData.continuation = getNextContinuation(continuations) ?? this.#baseData.continuation;
   }
 
   #handleActions(actions: Actions) {
@@ -221,7 +221,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   async #execute() {
-    if (!this.#payload) {
+    if (!this.#baseData) {
       throw new Error("missing payload.");
     }
     if (this.#status === "inactivated") {
@@ -235,7 +235,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       //     JSON.stringify(res),
       //   );
       // }
-      const apiResponse = await fetchGetLiveChatApiResponse(this.#payload);
+      const apiResponse = await fetchGetLiveChatApiResponse(this.#baseData);
 
       this.#updateContinuation(apiResponse.continuationContents.liveChatContinuation.continuations);
 
@@ -260,7 +260,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       if (this.#status !== "inactivated") {
         return false;
       }
-      this.#payload = await getRequestPayload(this.#channelId);
+      this.#baseData = await getPayloadBaseData(this.#channelId);
       this.#status = "activated";
       this.#execute();
       this.emit("start");
