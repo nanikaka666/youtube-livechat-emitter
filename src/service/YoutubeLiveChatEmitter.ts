@@ -3,7 +3,7 @@ import TypedEmitter from "typed-emitter";
 import { getRequestPayload } from "./YoutubeLivePage";
 import { Continuations, getLiveChatApiResponseSchema } from "../zod/continuation";
 import fs from "node:fs";
-import { getNextContinuation } from "../parser/LiveChatApiResponseParser";
+import { getNextContinuation } from "./YoutubeLiveChatApi";
 import {
   Actions,
   AddBannerToLiveChatCommand,
