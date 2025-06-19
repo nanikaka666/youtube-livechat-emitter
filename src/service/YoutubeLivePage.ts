@@ -1,10 +1,13 @@
 import { parse } from "node-html-parser";
-import { fetchLivePage } from "../infrastructure/fetch";
+import { get } from "../infrastructure/fetch";
 import { GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
 import { ChannelId } from "../core/ChannelId";
 
 export async function getRequestPayload(channelId: ChannelId) {
-  const rawHtml = await fetchLivePage(channelId);
+  const livePageUrl = channelId.isHandle
+    ? `https://www.youtube.com/${channelId.id}/live`
+    : `https://www.youtube.com/channel/${channelId.id}/live`;
+  const rawHtml = await get(livePageUrl);
 
   const videoId = getVideoId(rawHtml);
   if (videoId === undefined) {

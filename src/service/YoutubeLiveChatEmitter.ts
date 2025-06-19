@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { getRequestPayload } from "../parser/LivePageParser";
+import { getRequestPayload } from "./YoutubeLivePage";
 import { Continuations, getLiveChatApiResponseSchema } from "../zod/continuation";
 import fs from "node:fs";
 import { getNextContinuation } from "../parser/LiveChatApiResponseParser";

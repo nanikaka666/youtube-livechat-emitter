@@ -24,10 +24,7 @@ export async function fetchLiveChatApi(payload: GetLiveChatApiRequestPayload): P
   return res.data as string;
 }
 
-export async function fetchLivePage(channelId: ChannelId): Promise<string> {
-  const channelUrl = channelId.isHandle
-    ? `https://www.youtube.com/${channelId.id}/live`
-    : `https://www.youtube.com/channel/${channelId.id}/live`;
-  const res = await axios.get(channelUrl);
+export async function get(url: string): Promise<string> {
+  const res = await axios.get(url);
   return res.data as string;
 }
