@@ -1,5 +1,5 @@
 import { UnknownJsonDataError } from "../core/errors";
-import { fetchLiveChatApi } from "../infrastructure/fetch";
+import { post } from "../infrastructure/fetch";
 import {
   Continuations,
   GetLiveChatApiResponse,
@@ -56,6 +56,6 @@ export async function fetchGetLiveChatApiResponse(
     continuation: baseData.continuation,
   } satisfies GetLiveChatApiPayload;
 
-  const res = await fetchLiveChatApi(apiUrl, payload);
+  const res = await post(apiUrl, payload);
   return getLiveChatApiResponseSchema.parse(res);
 }
