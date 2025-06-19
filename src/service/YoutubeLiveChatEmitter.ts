@@ -1,9 +1,8 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { getRequestPayload } from "./YoutubeLivePage";
-import { Continuations, getLiveChatApiResponseSchema } from "../zod/continuation";
-import fs from "node:fs";
-import { getNextContinuation } from "./YoutubeLiveChatApi";
+import { Continuations } from "../zod/continuation";
+import { fetchGetLiveChatApiResponse, getNextContinuation } from "./YoutubeLiveChatApi";
 import {
   Actions,
   AddBannerToLiveChatCommand,
@@ -31,7 +30,7 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "../parser/RendererParser";
-import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";
@@ -230,15 +229,13 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     }
 
     try {
-      const res = await fetchLiveChatApi(this.#payload);
-
-      if (this.#isWriteFile) {
-        fs.writeFileSync(
-          `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
-          JSON.stringify(res),
-        );
-      }
-      const apiResponse = getLiveChatApiResponseSchema.parse(res);
+      // if (this.#isWriteFile) {
+      //   fs.writeFileSync(
+      //     `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
+      //     JSON.stringify(res),
+      //   );
+      // }
+      const apiResponse = await fetchGetLiveChatApiResponse(this.#payload);
 
       this.#updateContinuation(apiResponse.continuationContents.liveChatContinuation.continuations);
 
