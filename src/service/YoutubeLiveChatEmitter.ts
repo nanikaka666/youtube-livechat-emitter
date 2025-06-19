@@ -30,7 +30,7 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "../parser/RendererParser";
-import { GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { GetLiveChatApiRequestPayload } from "./YoutubeLiveChatApi";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";

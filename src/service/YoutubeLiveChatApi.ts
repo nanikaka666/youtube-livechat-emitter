@@ -1,10 +1,17 @@
 import { UnknownJsonDataError } from "../core/errors";
-import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { fetchLiveChatApi } from "../infrastructure/fetch";
 import {
   Continuations,
   GetLiveChatApiResponse,
   getLiveChatApiResponseSchema,
 } from "../zod/continuation";
+
+export interface GetLiveChatApiRequestPayload {
+  continuation: string;
+  readonly apiKey: string;
+  readonly clientName: string;
+  readonly clientVersion: string;
+}
 
 export function getNextContinuation(continuations: Continuations): string | undefined {
   const continuation = [...continuations].shift();
