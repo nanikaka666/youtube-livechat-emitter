@@ -13,6 +13,16 @@ export interface GetLiveChatApiPayloadBaseData {
   readonly clientVersion: string;
 }
 
+export interface GetLiveChatApiPayload {
+  context: {
+    client: {
+      clientName: string;
+      clientVersion: string;
+    };
+  };
+  continuation: string;
+}
+
 export function getNextContinuation(continuations: Continuations): string | undefined {
   const continuation = [...continuations].shift();
   if (!continuation) {
@@ -36,7 +46,7 @@ export async function fetchGetLiveChatApiResponse(
   baseData: GetLiveChatApiPayloadBaseData,
 ): Promise<GetLiveChatApiResponse> {
   const apiUrl = `https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?key=${baseData.apiKey}`;
-  const postPayload = {
+  const payload = {
     context: {
       client: {
         clientName: baseData.clientName,
@@ -44,8 +54,8 @@ export async function fetchGetLiveChatApiResponse(
       },
     },
     continuation: baseData.continuation,
-  };
+  } satisfies GetLiveChatApiPayload;
 
-  const res = await fetchLiveChatApi(apiUrl, postPayload);
+  const res = await fetchLiveChatApi(apiUrl, payload);
   return getLiveChatApiResponseSchema.parse(res);
 }
