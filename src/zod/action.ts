@@ -30,30 +30,26 @@ export const addChatItemActionSchema = z.object({
     ]),
   }),
 });
-export type AddChatItemAction = z.infer<typeof addChatItemActionSchema.shape.addChatItemAction>;
+export type AddChatItemAction = z.infer<typeof addChatItemActionSchema>;
 
 export const removeChatItemActionSchema = z.object({
   removeChatItemAction: z.object({
     targetItemId: z.string(),
   }),
 });
-export type RemoveChatItemAction = z.infer<
-  typeof removeChatItemActionSchema.shape.removeChatItemAction
->;
+export type RemoveChatItemAction = z.infer<typeof removeChatItemActionSchema>;
 export const liveChatReportModerationStateCommandSchema = z.object({
   liveChatReportModerationStateCommand: z.object({}),
 });
 export type LiveChatReportModerationStateCommand = z.infer<
-  typeof liveChatReportModerationStateCommandSchema.shape.liveChatReportModerationStateCommand
+  typeof liveChatReportModerationStateCommandSchema
 >;
 export const addBannerToLiveChatCommandSchema = z.object({
   addBannerToLiveChatCommand: z.object({
     bannerRenderer: liveChatBannerRendererSchema,
   }),
 });
-export type AddBannerToLiveChatCommand = z.infer<
-  typeof addBannerToLiveChatCommandSchema.shape.addBannerToLiveChatCommand
->;
+export type AddBannerToLiveChatCommand = z.infer<typeof addBannerToLiveChatCommandSchema>;
 
 export const addLiveChatTickerItemActionSchema = z.object({
   addLiveChatTickerItemAction: z.object({
@@ -64,36 +60,28 @@ export const addLiveChatTickerItemActionSchema = z.object({
     ]),
   }),
 });
-export type AddLiveChatTickerItemAction = z.infer<
-  typeof addLiveChatTickerItemActionSchema.shape.addLiveChatTickerItemAction
->;
+export type AddLiveChatTickerItemAction = z.infer<typeof addLiveChatTickerItemActionSchema>;
 
 export const removeBannerForLiveChatCommandSchema = z.object({
   removeBannerForLiveChatCommand: z.object({
     targetActionId: z.string(),
   }),
 });
-export type RemoveBannerForLiveChatCommand = z.infer<
-  typeof removeBannerForLiveChatCommandSchema.shape.removeBannerForLiveChatCommand
->;
+export type RemoveBannerForLiveChatCommand = z.infer<typeof removeBannerForLiveChatCommandSchema>;
 
 export const removeChatItemByAuthorActionSchema = z.object({
   removeChatItemByAuthorAction: z.object({
     externalChannelId: z.string(),
   }),
 });
-export type RemoveChatItemByAuthorAction = z.infer<
-  typeof removeChatItemByAuthorActionSchema.shape.removeChatItemByAuthorAction
->;
+export type RemoveChatItemByAuthorAction = z.infer<typeof removeChatItemByAuthorActionSchema>;
 
 export const replaceChatItemActionSchema = z.object({
   replaceChatItemAction: z.object({
     targetItemId: z.string(),
   }),
 });
-export type ReplaceChatItemAction = z.infer<
-  typeof replaceChatItemActionSchema.shape.replaceChatItemAction
->;
+export type ReplaceChatItemAction = z.infer<typeof replaceChatItemActionSchema>;
 
 export const actionsSchema = z.array(
   z.union([

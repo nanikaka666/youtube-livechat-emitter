@@ -73,17 +73,15 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   #handleActions(actions: Actions) {
     actions.forEach((action) => {
       if ("addChatItemAction" in action) {
-        this.#handleAddChatItemAction(action.addChatItemAction);
+        this.#handleAddChatItemAction(action);
       } else if ("removeChatItemAction" in action) {
-        this.#handleRemoveChatItemAction(action.removeChatItemAction);
+        this.#handleRemoveChatItemAction(action);
       } else if ("liveChatReportModerationStateCommand" in action) {
-        this.#handleLiveChatReportModerationStateCommand(
-          action.liveChatReportModerationStateCommand,
-        );
+        this.#handleLiveChatReportModerationStateCommand(action);
       } else if ("addBannerToLiveChatCommand" in action) {
-        this.#handleAddBannerToLiveChatCommand(action.addBannerToLiveChatCommand);
+        this.#handleAddBannerToLiveChatCommand(action);
       } else if ("addLiveChatTickerItemAction" in action) {
-        this.#handleAddLiveChatTickerItemAction(action.addLiveChatTickerItemAction);
+        this.#handleAddLiveChatTickerItemAction(action);
       } else if ("removeBannerForLiveChatCommand" in action) {
         const actionId = action.removeBannerForLiveChatCommand.targetActionId;
         this.emit("unpinned", this.#pinnedItem.get(actionId));
@@ -102,56 +100,38 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #handleAddChatItemAction(action: AddChatItemAction) {
-    if ("liveChatTextMessageRenderer" in action.item) {
-      this.emit(
-        "addChat",
-        parseLiveChatTextMessageRenderer(action.item.liveChatTextMessageRenderer),
-      );
-    } else if ("liveChatPaidMessageRenderer" in action.item) {
-      this.emit(
-        "addChat",
-        parseLiveChatPaidMessageRenderer(action.item.liveChatPaidMessageRenderer),
-      );
-    } else if ("liveChatPaidStickerRenderer" in action.item) {
-      this.emit(
-        "addChat",
-        parseLiveChatPaidStickerRenderer(action.item.liveChatPaidStickerRenderer),
-      );
-    } else if ("liveChatMembershipItemRenderer" in action.item) {
-      this.emit(
-        "memberships",
-        parseLiveChatMembershipItemRenderer(action.item.liveChatMembershipItemRenderer),
-      );
-    } else if ("liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in action.item) {
+    const item = action.addChatItemAction.item;
+    if ("liveChatTextMessageRenderer" in item) {
+      this.emit("addChat", parseLiveChatTextMessageRenderer(item));
+    } else if ("liveChatPaidMessageRenderer" in item) {
+      this.emit("addChat", parseLiveChatPaidMessageRenderer(item));
+    } else if ("liveChatPaidStickerRenderer" in item) {
+      this.emit("addChat", parseLiveChatPaidStickerRenderer(item));
+    } else if ("liveChatMembershipItemRenderer" in item) {
+      this.emit("memberships", parseLiveChatMembershipItemRenderer(item));
+    } else if ("liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in item) {
       this.emit(
         "sponsorshipsGift",
-        parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(
-          action.item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
-        ),
+        parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(item),
       );
-    } else if ("liveChatSponsorshipsGiftRedemptionAnnouncementRenderer" in action.item) {
+    } else if ("liveChatSponsorshipsGiftRedemptionAnnouncementRenderer" in item) {
       this.emit(
         "redemptionGift",
-        parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(
-          action.item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
-        ),
+        parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(item),
       );
-    } else if ("liveChatViewerEngagementMessageRenderer" in action.item) {
+    } else if ("liveChatViewerEngagementMessageRenderer" in item) {
       // do nothing.
-    } else if ("liveChatModeChangeMessageRenderer" in action.item) {
+    } else if ("liveChatModeChangeMessageRenderer" in item) {
       // do nothing.
-    } else if ("liveChatPlaceholderItemRenderer" in action.item) {
+    } else if ("liveChatPlaceholderItemRenderer" in item) {
       // do nothing.
     } else {
-      throw new UnknownJsonDataError(
-        action.item,
-        `Unknown addChatItemAction detected. ${action.item}`,
-      );
+      throw new UnknownJsonDataError(item, `Unknown addChatItemAction detected. ${item}`);
     }
   }
 
   #handleRemoveChatItemAction(action: RemoveChatItemAction) {
-    this.emit("removeChat", new LiveChatItemId(action.targetItemId));
+    this.emit("removeChat", new LiveChatItemId(action.removeChatItemAction.targetItemId));
   }
 
   #handleLiveChatReportModerationStateCommand(action: LiveChatReportModerationStateCommand) {
@@ -159,13 +139,12 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #handleAddBannerToLiveChatCommand(action: AddBannerToLiveChatCommand) {
-    const { bannerType } = action.bannerRenderer.liveChatBannerRenderer;
+    const renderer = action.addBannerToLiveChatCommand.bannerRenderer.liveChatBannerRenderer;
+    const { bannerType } = renderer;
     if (bannerType === "LIVE_CHAT_BANNER_TYPE_PINNED_MESSAGE") {
-      if ("liveChatTextMessageRenderer" in action.bannerRenderer.liveChatBannerRenderer.contents) {
-        const item = parseLiveChatTextMessageRenderer(
-          action.bannerRenderer.liveChatBannerRenderer.contents.liveChatTextMessageRenderer,
-        );
-        this.#pinnedItem.set(action.bannerRenderer.liveChatBannerRenderer.actionId, item);
+      if ("liveChatTextMessageRenderer" in renderer.contents) {
+        const item = parseLiveChatTextMessageRenderer(renderer.contents);
+        this.#pinnedItem.set(renderer.actionId, item);
         this.emit("pinned", item);
       } else {
         this.emit("error", new Error("Unknown Pinned message type detected."));
@@ -183,30 +162,15 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #handleAddLiveChatTickerItemAction(action: AddLiveChatTickerItemAction) {
-    if ("liveChatTickerPaidMessageItemRenderer" in action.item) {
-      this.emit(
-        "addTicker",
-        parseLiveChatTickerPaidMessageItemRenderer(
-          action.item.liveChatTickerPaidMessageItemRenderer,
-        ),
-      );
-    } else if ("liveChatTickerSponsorItemRenderer" in action.item) {
-      this.emit(
-        "addTicker",
-        parseLiveChatTickerSponsorItemRenderer(action.item.liveChatTickerSponsorItemRenderer),
-      );
-    } else if ("liveChatTickerPaidStickerItemRenderer" in action.item) {
-      this.emit(
-        "addTicker",
-        parseLiveChatTickerPaidStickerItemRenderer(
-          action.item.liveChatTickerPaidStickerItemRenderer,
-        ),
-      );
+    const item = action.addLiveChatTickerItemAction.item;
+    if ("liveChatTickerPaidMessageItemRenderer" in item) {
+      this.emit("addTicker", parseLiveChatTickerPaidMessageItemRenderer(item));
+    } else if ("liveChatTickerSponsorItemRenderer" in item) {
+      this.emit("addTicker", parseLiveChatTickerSponsorItemRenderer(item));
+    } else if ("liveChatTickerPaidStickerItemRenderer" in item) {
+      this.emit("addTicker", parseLiveChatTickerPaidStickerItemRenderer(item));
     } else {
-      throw new UnknownJsonDataError(
-        action.item,
-        `Unknown addLiveChatTickerItemAction detected. ${action.item}`,
-      );
+      throw new UnknownJsonDataError(item, `Unknown addLiveChatTickerItemAction detected. ${item}`);
     }
   }
 

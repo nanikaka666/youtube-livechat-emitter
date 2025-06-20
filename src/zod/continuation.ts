@@ -9,9 +9,7 @@ export const invalidationContinuationDataSchema = z.object({
     continuation: z.string(),
   }),
 });
-export type InvalidationContinuationData = z.infer<
-  typeof invalidationContinuationDataSchema.shape.invalidationContinuationData
->;
+export type InvalidationContinuationData = z.infer<typeof invalidationContinuationDataSchema>;
 
 export const timedContinuationDataSchema = z.object({
   timedContinuationData: z.object({
@@ -19,18 +17,14 @@ export const timedContinuationDataSchema = z.object({
     timeoutMs: z.number(),
   }),
 });
-export type TimedContinuationData = z.infer<
-  typeof timedContinuationDataSchema.shape.timedContinuationData
->;
+export type TimedContinuationData = z.infer<typeof timedContinuationDataSchema>;
 
 export const reloadContinuationDataSchema = z.object({
   reloadContinuationData: z.object({
     continuation: z.string(),
   }),
 });
-export type reloadContinuationData = z.infer<
-  typeof reloadContinuationDataSchema.shape.reloadContinuationData
->;
+export type reloadContinuationData = z.infer<typeof reloadContinuationDataSchema>;
 
 export const continuationsSchema = z
   .array(
@@ -49,9 +43,7 @@ export const liveChatContinuationSchema = z.object({
     actions: actionsSchema.optional(),
   }),
 });
-export type LiveChatContinuationData = z.infer<
-  typeof liveChatContinuationSchema.shape.liveChatContinuation
->;
+export type LiveChatContinuationData = z.infer<typeof liveChatContinuationSchema>;
 export const getLiveChatApiResponseSchema = z.object({
   continuationContents: liveChatContinuationSchema,
 });
