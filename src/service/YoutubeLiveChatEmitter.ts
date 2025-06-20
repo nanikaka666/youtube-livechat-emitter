@@ -1,9 +1,8 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { getRequestPayload } from "../parser/LivePageParser";
-import { Continuations, getLiveChatApiResponseSchema } from "../zod/continuation";
-import fs from "node:fs";
-import { getNextContinuation } from "../parser/LiveChatApiResponseParser";
+import { getPayloadBaseData } from "./YoutubeLivePage";
+import { Continuations } from "../zod/continuation";
+import { fetchGetLiveChatApiResponse, getNextContinuation } from "./YoutubeLiveChatApi";
 import {
   Actions,
   AddBannerToLiveChatCommand,
@@ -31,7 +30,7 @@ import {
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
 } from "../parser/RendererParser";
-import { fetchLiveChatApi, GetLiveChatApiRequestPayload } from "../infrastructure/fetch";
+import { GetLiveChatApiPayloadBaseData } from "./YoutubeLiveChatApi";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";
@@ -57,7 +56,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   readonly #channelId: ChannelId;
   readonly #timeoutMilliSeconds: number;
   readonly #isWriteFile: boolean;
-  #payload?: GetLiveChatApiRequestPayload;
+  #baseData?: GetLiveChatApiPayloadBaseData;
   #status: EmitterStatus;
   #pinnedItem: Map<string, ChatItemText>;
 
@@ -75,10 +74,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   #updateContinuation(continuations: Continuations) {
-    if (this.#payload === undefined) {
+    if (this.#baseData === undefined) {
       throw new Error("payload is undefined when updating continuation.");
     }
-    this.#payload.continuation = getNextContinuation(continuations) ?? this.#payload.continuation;
+    this.#baseData.continuation = getNextContinuation(continuations) ?? this.#baseData.continuation;
   }
 
   #handleActions(actions: Actions) {
@@ -222,7 +221,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   async #execute() {
-    if (!this.#payload) {
+    if (!this.#baseData) {
       throw new Error("missing payload.");
     }
     if (this.#status === "inactivated") {
@@ -230,15 +229,13 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     }
 
     try {
-      const res = await fetchLiveChatApi(this.#payload);
-
-      if (this.#isWriteFile) {
-        fs.writeFileSync(
-          `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
-          JSON.stringify(res),
-        );
-      }
-      const apiResponse = getLiveChatApiResponseSchema.parse(res);
+      // if (this.#isWriteFile) {
+      //   fs.writeFileSync(
+      //     `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
+      //     JSON.stringify(res),
+      //   );
+      // }
+      const apiResponse = await fetchGetLiveChatApiResponse(this.#baseData);
 
       this.#updateContinuation(apiResponse.continuationContents.liveChatContinuation.continuations);
 
@@ -263,7 +260,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       if (this.#status !== "inactivated") {
         return false;
       }
-      this.#payload = await getRequestPayload(this.#channelId);
+      this.#baseData = await getPayloadBaseData(this.#channelId);
       this.#status = "activated";
       this.#execute();
       this.emit("start");
