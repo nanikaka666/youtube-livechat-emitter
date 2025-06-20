@@ -34,6 +34,7 @@ import { GetLiveChatApiPayloadBaseData } from "./YoutubeLiveChatApi";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";
+import { AxiosError } from "axios";
 
 export type LiveChatEvent = {
   start: () => void;
@@ -243,7 +244,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         this.#handleActions(apiResponse.continuationContents.liveChatContinuation.actions);
       }
     } catch (err) {
-      if (err instanceof Error) {
+      if (err instanceof Error || err instanceof AxiosError) {
         this.emit("error", err);
       } else {
         this.emit("error", new Error("Failed execute."));
@@ -266,7 +267,7 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
       this.emit("start");
       return true;
     } catch (err) {
-      if (err instanceof Error) {
+      if (err instanceof Error || err instanceof AxiosError) {
         this.emit("error", err);
       } else {
         this.emit("error", new Error("Failed to starting."));
