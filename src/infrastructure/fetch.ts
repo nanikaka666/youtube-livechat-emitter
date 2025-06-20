@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export async function post(url: string, data: object): Promise<string> {
-  const res = await axios.post(url, data);
+export async function post(url: string, postData: object): Promise<string> {
+  const res = await axios.post(url, postData);
   return res.data as string;
 }
 
