@@ -52,19 +52,13 @@ type EmitterStatus = "inactivated" | "activated" | "closed";
 
 export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmitter<LiveChatEvent>) {
   readonly #timeoutMilliSeconds: number;
-  readonly #isWriteFile: boolean;
   readonly #liveChatApi: YoutubeLiveChatApi;
   #status: EmitterStatus;
   #pinnedItem: Map<string, ChatItemText>;
 
-  constructor(
-    channelId: string,
-    timeoutMilliSeconds: number = 5 * 1000,
-    isWriteFile: boolean = false,
-  ) {
+  constructor(channelId: string, timeoutMilliSeconds: number = 5 * 1000) {
     super();
     this.#timeoutMilliSeconds = timeoutMilliSeconds;
-    this.#isWriteFile = isWriteFile;
     this.#liveChatApi = new YoutubeLiveChatApi(new ChannelId(channelId));
     this.#status = "inactivated";
     this.#pinnedItem = new Map();
@@ -180,12 +174,6 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
     }
 
     try {
-      // if (this.#isWriteFile) {
-      //   fs.writeFileSync(
-      //     `/Users/nanikaka/dev/tmp-data/get-live-chat-raw-responses/${this.#channelId}-${new Date().getTime()}.json`,
-      //     JSON.stringify(res),
-      //   );
-      // }
       const actions = await this.#liveChatApi.getNextActions();
 
       if (actions) {
