@@ -209,10 +209,10 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
   }
 
   async start() {
+    if (this.#status !== "inactivated") {
+      return false;
+    }
     try {
-      if (this.#status !== "inactivated") {
-        return false;
-      }
       await this.#liveChatApi.init();
       this.#status = "activated";
       this.#execute();
