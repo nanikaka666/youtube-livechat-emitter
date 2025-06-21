@@ -1,5 +1,4 @@
 import axios from "axios";
-import { GetLiveChatApiResponse } from "../zod/continuation";
 
 export async function post(url: string, postData: object): Promise<object> {
   const res = await axios.post(url, postData);
