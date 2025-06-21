@@ -4,17 +4,21 @@ import { YoutubeLiveChatApi } from "../../src/service/YoutubeLiveChatApi";
 import { AxiosError } from "axios";
 import { Actions } from "../../src/zod/action";
 import {
+  AddChatItemAction_MembershipMilestone,
+  AddChatItemAction_NewMembership,
   AddChatItemAction_SuperChat,
   AddChatItemAction_SuperSticker,
   AddChatItemAction_TextMessage,
 } from "../fixture/addChatItemAction";
-import { ChatItemText, LiveChatItem } from "../../src/types/liveChat";
+import { ChatItemText, LiveChatItem, NewMembership } from "../../src/types/liveChat";
 import {
+  parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/parser/RendererParser";
 import {
+  LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
   LiveChatTextMessageRenderer,
@@ -318,6 +322,51 @@ describe("check about the unpinned event", () => {
       parseLiveChatTextMessageRenderer(
         AddBannerToLiveChatCommand_PinnedMessage.addBannerToLiveChatCommand.bannerRenderer
           .liveChatBannerRenderer.contents as LiveChatTextMessageRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the memberships event", () => {
+  test("memberships event is emitted when someone joined new memberships", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddChatItemAction_NewMembership] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onMemberships = jest.fn();
+    emitter.on("memberships", onMemberships);
+
+    expect(onMemberships).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onMemberships).toHaveBeenCalledTimes(1);
+    expect(onMemberships).toHaveBeenCalledWith(
+      parseLiveChatMembershipItemRenderer(
+        AddChatItemAction_NewMembership.addChatItemAction.item as LiveChatMembershipItemRenderer,
+      ),
+    );
+  });
+
+  test("memberships event is emitted when someone reached milestone.", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddChatItemAction_MembershipMilestone] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onMemberships = jest.fn();
+    emitter.on("memberships", onMemberships);
+
+    expect(onMemberships).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onMemberships).toHaveBeenCalledTimes(1);
+    expect(onMemberships).toHaveBeenCalledWith(
+      parseLiveChatMembershipItemRenderer(
+        AddChatItemAction_MembershipMilestone.addChatItemAction
+          .item as LiveChatMembershipItemRenderer,
       ),
     );
   });
