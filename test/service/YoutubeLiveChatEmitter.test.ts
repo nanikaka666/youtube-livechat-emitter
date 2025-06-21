@@ -6,6 +6,7 @@ import { Actions } from "../../src/zod/action";
 import {
   AddChatItemAction_MembershipMilestone,
   AddChatItemAction_NewMembership,
+  AddChatItemAction_SponsorshipsGiftPurchase,
   AddChatItemAction_SuperChat,
   AddChatItemAction_SuperSticker,
   AddChatItemAction_TextMessage,
@@ -15,12 +16,14 @@ import {
   parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
+  parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/parser/RendererParser";
 import {
   LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
+  LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
@@ -367,6 +370,30 @@ describe("check about the memberships event", () => {
       parseLiveChatMembershipItemRenderer(
         AddChatItemAction_MembershipMilestone.addChatItemAction
           .item as LiveChatMembershipItemRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the sponsorshipsGift event", () => {
+  test("sponsorshipsGift event is emitted when someone purchased the gift", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddChatItemAction_SponsorshipsGiftPurchase] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onSponsorshipsGift = jest.fn();
+    emitter.on("sponsorshipsGift", onSponsorshipsGift);
+
+    expect(onSponsorshipsGift).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onSponsorshipsGift).toHaveBeenCalledTimes(1);
+    expect(onSponsorshipsGift).toHaveBeenCalledWith(
+      parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(
+        AddChatItemAction_SponsorshipsGiftPurchase.addChatItemAction
+          .item as LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
       ),
     );
   });

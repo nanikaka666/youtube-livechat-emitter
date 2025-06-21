@@ -3,6 +3,7 @@ import {
   LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
+  LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 
@@ -196,5 +197,47 @@ export const AddChatItemAction_MembershipMilestone: AddChatItemAction = {
         },
       },
     } satisfies LiveChatMembershipItemRenderer,
+  },
+};
+
+export const AddChatItemAction_SponsorshipsGiftPurchase: AddChatItemAction = {
+  addChatItemAction: {
+    item: {
+      liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: {
+        authorExternalChannelId: "AUTHOR_EXTERNALCHANNELID",
+        header: {
+          liveChatSponsorshipsHeaderRenderer: {
+            authorName: {
+              simpleText: "AUTHOR_NAME",
+            },
+            authorPhoto: {
+              thumbnails: [{ url: "AUTHOR IMAGE URL", width: 32, height: 32 }],
+            },
+            authorBadges: [
+              {
+                liveChatAuthorBadgeRenderer: {
+                  customThumbnail: {
+                    thumbnails: [{ url: "membership custom thumbnail url", width: 16, height: 16 }],
+                  },
+                  tooltip: "Membership (6 months)",
+                },
+              },
+            ],
+            primaryText: {
+              runs: [
+                { text: "Gifted " },
+                { text: "1" },
+                { text: " " },
+                { text: "Channel Name" },
+                { text: " memberships" },
+              ],
+            },
+            image: {
+              thumbnails: [{ url: "Gift Image URL" }],
+            },
+          },
+        },
+      },
+    } satisfies LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   },
 };
