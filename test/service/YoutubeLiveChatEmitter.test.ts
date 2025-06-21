@@ -24,6 +24,7 @@ import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import { RemoveChatItemByAuthorAction_01 } from "../fixture/removeChatItemByAuthorAction";
 import { ChannelId } from "../../src/core/ChannelId";
 import { AddBannerToLiveChatCommand_PinnedMessage } from "../fixture/addBannerToLiveChatCommand";
+import { RemoveBannerForLiveChatCommand_01 } from "../fixture/removeBannerForLiveChatCommand";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -270,6 +271,50 @@ describe("check about the pinned event", () => {
     await emitter.start();
     expect(onPinned).toHaveBeenCalledTimes(1);
     expect(onPinned).toHaveBeenCalledWith(
+      parseLiveChatTextMessageRenderer(
+        AddBannerToLiveChatCommand_PinnedMessage.addBannerToLiveChatCommand.bannerRenderer
+          .liveChatBannerRenderer.contents as LiveChatTextMessageRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the unpinned event", () => {
+  test("unpinned event is emitted by owner operation, in case of without contents", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([RemoveBannerForLiveChatCommand_01] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onUnpinned = jest.fn();
+    emitter.on("unpinned", onUnpinned);
+
+    expect(onUnpinned).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onUnpinned).toHaveBeenCalledTimes(1);
+    expect(onUnpinned).toHaveBeenCalledWith(undefined);
+  });
+
+  test("unpinned event is emitted by owner operation, in case of with contents", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([
+          AddBannerToLiveChatCommand_PinnedMessage,
+          RemoveBannerForLiveChatCommand_01,
+        ] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onUnpinned = jest.fn();
+    emitter.on("unpinned", onUnpinned);
+
+    expect(onUnpinned).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onUnpinned).toHaveBeenCalledTimes(1);
+    expect(onUnpinned).toHaveBeenCalledWith(
       parseLiveChatTextMessageRenderer(
         AddBannerToLiveChatCommand_PinnedMessage.addBannerToLiveChatCommand.bannerRenderer
           .liveChatBannerRenderer.contents as LiveChatTextMessageRenderer,
