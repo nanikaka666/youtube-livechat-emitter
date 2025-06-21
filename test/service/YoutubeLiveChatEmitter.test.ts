@@ -21,6 +21,8 @@ import {
 } from "../../src/zod/renderer";
 import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
+import { RemoveChatItemByAuthorAction_01 } from "../fixture/removeChatItemByAuthorAction";
+import { ChannelId } from "../../src/core/ChannelId";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -226,6 +228,27 @@ describe("check about the removeChat event", () => {
     expect(onRemoveChat).toHaveBeenCalledTimes(1);
     expect(onRemoveChat).toHaveBeenCalledWith(
       new LiveChatItemId(RemoveChatItemAction_01.removeChatItemAction.targetItemId),
+    );
+  });
+});
+
+describe("check about the blockUser event", () => {
+  test("blockUser event is emitted by owner operation", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([RemoveChatItemByAuthorAction_01] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onBlockUser = jest.fn();
+    emitter.on("blockUser", onBlockUser);
+
+    expect(onBlockUser).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onBlockUser).toHaveBeenCalledTimes(1);
+    expect(onBlockUser).toHaveBeenCalledWith(
+      new ChannelId(RemoveChatItemByAuthorAction_01.removeChatItemByAuthorAction.externalChannelId),
     );
   });
 });
