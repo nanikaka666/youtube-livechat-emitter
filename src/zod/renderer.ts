@@ -16,9 +16,7 @@ export const liveChatAuthorBadgeRendererSchema = z.object({
     icon: iconTypeSchema.optional(),
   }),
 });
-export type LiveChatAuthorBadgeRenderer = z.infer<
-  typeof liveChatAuthorBadgeRendererSchema.shape.liveChatAuthorBadgeRenderer
->;
+export type LiveChatAuthorBadgeRenderer = z.infer<typeof liveChatAuthorBadgeRendererSchema>;
 
 export const authorBadgesSchema = z.array(liveChatAuthorBadgeRendererSchema);
 export type AuthorBadges = z.infer<typeof authorBadgesSchema>;
@@ -40,9 +38,7 @@ export const liveChatTextMessageRendererSchema = z.object({
     })
     .and(messageRendererBaseSchema),
 });
-export type LiveChatTextMessageRenderer = z.infer<
-  typeof liveChatTextMessageRendererSchema.shape.liveChatTextMessageRenderer
->;
+export type LiveChatTextMessageRenderer = z.infer<typeof liveChatTextMessageRendererSchema>;
 export const liveChatViewerEngagementMessageRendererSchema = z.object({
   liveChatViewerEngagementMessageRenderer: z.object({
     timestampUsec: timestampUsecSchema,
@@ -64,9 +60,7 @@ export const liveChatPaidMessageRendererSchema = z.object({
     })
     .and(messageRendererBaseSchema),
 });
-export type LiveChatPaidMessageRenderer = z.infer<
-  typeof liveChatPaidMessageRendererSchema.shape.liveChatPaidMessageRenderer
->;
+export type LiveChatPaidMessageRenderer = z.infer<typeof liveChatPaidMessageRendererSchema>;
 
 export const liveChatTickerPaidMessageItemRendererSchema = z.object({
   liveChatTickerPaidMessageItemRenderer: z.object({
@@ -81,7 +75,7 @@ export const liveChatTickerPaidMessageItemRendererSchema = z.object({
   }),
 });
 export type LiveChatTickerPaidMessageItemRenderer = z.infer<
-  typeof liveChatTickerPaidMessageItemRendererSchema.shape.liveChatTickerPaidMessageItemRenderer
+  typeof liveChatTickerPaidMessageItemRendererSchema
 >;
 
 export const liveChatPaidStickerRendererSchema = z.object({
@@ -96,9 +90,7 @@ export const liveChatPaidStickerRendererSchema = z.object({
     })
     .and(messageRendererBaseSchema),
 });
-export type LiveChatPaidStickerRenderer = z.infer<
-  typeof liveChatPaidStickerRendererSchema.shape.liveChatPaidStickerRenderer
->;
+export type LiveChatPaidStickerRenderer = z.infer<typeof liveChatPaidStickerRendererSchema>;
 
 export const liveChatMembershipItemRendererSchema = z.object({
   liveChatMembershipItemRenderer: z.object({
@@ -118,9 +110,7 @@ export const liveChatMembershipItemRendererSchema = z.object({
     ]),
   }),
 });
-export type LiveChatMembershipItemRenderer = z.infer<
-  typeof liveChatMembershipItemRendererSchema.shape.liveChatMembershipItemRenderer
->;
+export type LiveChatMembershipItemRenderer = z.infer<typeof liveChatMembershipItemRendererSchema>;
 
 export const liveChatBannerHeaderRendererSchema = z.object({
   liveChatBannerHeaderRenderer: z.object({
@@ -128,9 +118,7 @@ export const liveChatBannerHeaderRendererSchema = z.object({
     text: messageSchema,
   }),
 });
-export type LiveChatBannerHeaderRenderer = z.infer<
-  typeof liveChatBannerHeaderRendererSchema.shape.liveChatBannerHeaderRenderer
->;
+export type LiveChatBannerHeaderRenderer = z.infer<typeof liveChatBannerHeaderRendererSchema>;
 
 export const liveChatBannerRedirectRendererSchema = z.object({
   liveChatBannerRedirectRenderer: z.object({
@@ -138,15 +126,13 @@ export const liveChatBannerRedirectRendererSchema = z.object({
     authorPhoto: thumbnailsSchema,
   }),
 });
-export type LiveChatBannerRedirectRenderer = z.infer<
-  typeof liveChatBannerRedirectRendererSchema.shape.liveChatBannerRedirectRenderer
->;
+export type LiveChatBannerRedirectRenderer = z.infer<typeof liveChatBannerRedirectRendererSchema>;
 
 export const liveChatBannerChatSummaryRendererSchema = z.object({
   liveChatBannerChatSummaryRenderer: z.object({}),
 });
 export type LiveChatBannerChatSummaryRenderer = z.infer<
-  typeof liveChatBannerChatSummaryRendererSchema.shape.liveChatBannerChatSummaryRenderer
+  typeof liveChatBannerChatSummaryRendererSchema
 >;
 
 export const liveChatBannerRendererSchema = z.object({
@@ -165,9 +151,7 @@ export const liveChatBannerRendererSchema = z.object({
     ]),
   }),
 });
-export type LiveChatBannerRenderer = z.infer<
-  typeof liveChatBannerRendererSchema.shape.liveChatBannerRenderer
->;
+export type LiveChatBannerRenderer = z.infer<typeof liveChatBannerRendererSchema>;
 
 export const liveChatModeChangeMessageRendererSchema = z.object({
   liveChatModeChangeMessageRenderer: z.object({
@@ -178,9 +162,7 @@ export const liveChatModeChangeMessageRendererSchema = z.object({
     subtext: messageSchema,
   }),
 });
-export type LiveChatModeChangeRenderer = z.infer<
-  typeof liveChatModeChangeMessageRendererSchema.shape.liveChatModeChangeMessageRenderer
->;
+export type LiveChatModeChangeRenderer = z.infer<typeof liveChatModeChangeMessageRendererSchema>;
 
 export const liveChatPlaceholderItemRendererSchema = z.object({
   liveChatPlaceholderItemRenderer: z.object({
@@ -188,9 +170,7 @@ export const liveChatPlaceholderItemRendererSchema = z.object({
     timestampUsec: timestampUsecSchema,
   }),
 });
-export type LiveChatPlaceholderItemRenderer = z.infer<
-  typeof liveChatPlaceholderItemRendererSchema.shape.liveChatPlaceholderItemRenderer
->;
+export type LiveChatPlaceholderItemRenderer = z.infer<typeof liveChatPlaceholderItemRendererSchema>;
 
 export const liveChatSponsorshipsHeaderRendererSchema = z.object({
   liveChatSponsorshipsHeaderRenderer: z.object({
@@ -202,7 +182,7 @@ export const liveChatSponsorshipsHeaderRendererSchema = z.object({
   }),
 });
 export type LiveChatSponsorshipsHeaderRenderer = z.infer<
-  typeof liveChatSponsorshipsHeaderRendererSchema.shape.liveChatSponsorshipsHeaderRenderer
+  typeof liveChatSponsorshipsHeaderRendererSchema
 >;
 
 export const liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema = z.object({
@@ -212,7 +192,7 @@ export const liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema = z.obje
   }),
 });
 export type LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer = z.infer<
-  typeof liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema.shape.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer
+  typeof liveChatSponsorshipsGiftPurchaseAnnouncementRendererSchema
 >;
 
 export const liveChatTickerSponsorItemRendererSchema = z.object({
@@ -232,7 +212,7 @@ export const liveChatTickerSponsorItemRendererSchema = z.object({
   }),
 });
 export type LiveChatTickerSponsorItemRenderer = z.infer<
-  typeof liveChatTickerSponsorItemRendererSchema.shape.liveChatTickerSponsorItemRenderer
+  typeof liveChatTickerSponsorItemRendererSchema
 >;
 
 export const liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema = z.object({
@@ -246,7 +226,7 @@ export const liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema = z.ob
   }),
 });
 export type LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer = z.infer<
-  typeof liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema.shape.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer
+  typeof liveChatSponsorshipsGiftRedemptionAnnouncementRendererSchema
 >;
 
 export const liveChatTickerPaidStickerItemRendererSchema = z.object({
@@ -263,5 +243,5 @@ export const liveChatTickerPaidStickerItemRendererSchema = z.object({
   }),
 });
 export type LiveChatTickerPaidStickerItemRenderer = z.infer<
-  typeof liveChatTickerPaidStickerItemRendererSchema.shape.liveChatTickerPaidStickerItemRenderer
+  typeof liveChatTickerPaidStickerItemRendererSchema
 >;

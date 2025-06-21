@@ -13,7 +13,7 @@ export type Thumbnail = z.infer<typeof thumbnailSchema>;
 export const thumbnailsSchema = z.object({
   thumbnails: z.array(thumbnailSchema),
 });
-export type Thumbnails = z.infer<typeof thumbnailsSchema.shape.thumbnails>;
+export type Thumbnails = z.infer<typeof thumbnailsSchema>;
 
 export const emojiInRunsSchema = z.object({
   emoji: z.object({
@@ -21,7 +21,7 @@ export const emojiInRunsSchema = z.object({
     image: thumbnailsSchema,
   }),
 });
-export type EmojiInRuns = z.infer<typeof emojiInRunsSchema.shape.emoji>;
+export type EmojiInRuns = z.infer<typeof emojiInRunsSchema>;
 
 export const iconTypeSchema = z.object({
   iconType: z.union([
@@ -33,7 +33,7 @@ export const iconTypeSchema = z.object({
     z.literal("SLOW_MODE"),
   ]),
 });
-export type IconType = z.infer<typeof iconTypeSchema.shape.iconType>;
+export type IconType = z.infer<typeof iconTypeSchema>;
 
 export const messageSchema = z.object({
   runs: z.array(z.union([textInRunsSchema, emojiInRunsSchema])),

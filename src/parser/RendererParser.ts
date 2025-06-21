@@ -41,36 +41,36 @@ export function parseLiveChatTextMessageRenderer(
 ): ChatItemText {
   return {
     type: "text",
-    id: new LiveChatItemId(renderer.id),
-    timestamp: renderer.timestampUsec,
+    id: new LiveChatItemId(renderer.liveChatTextMessageRenderer.id),
+    timestamp: renderer.liveChatTextMessageRenderer.timestampUsec,
     author: makeAuthor(
-      renderer.authorExternalChannelId,
-      renderer.authorName,
-      renderer.authorPhoto.thumbnails,
-      renderer.authorBadges,
+      renderer.liveChatTextMessageRenderer.authorExternalChannelId,
+      renderer.liveChatTextMessageRenderer.authorName,
+      renderer.liveChatTextMessageRenderer.authorPhoto,
+      renderer.liveChatTextMessageRenderer.authorBadges,
     ),
-    messages: parseMessage(renderer.message),
+    messages: parseMessage(renderer.liveChatTextMessageRenderer.message),
   };
 }
 
 export function parseLiveChatPaidMessageRenderer(renderer: LiveChatPaidMessageRenderer) {
   const res: ChatItemSuperChat = {
     type: "superChat",
-    id: new LiveChatItemId(renderer.id),
-    timestamp: renderer.timestampUsec,
+    id: new LiveChatItemId(renderer.liveChatPaidMessageRenderer.id),
+    timestamp: renderer.liveChatPaidMessageRenderer.timestampUsec,
     author: makeAuthor(
-      renderer.authorExternalChannelId,
-      renderer.authorName,
-      renderer.authorPhoto.thumbnails,
-      renderer.authorBadges,
+      renderer.liveChatPaidMessageRenderer.authorExternalChannelId,
+      renderer.liveChatPaidMessageRenderer.authorName,
+      renderer.liveChatPaidMessageRenderer.authorPhoto,
+      renderer.liveChatPaidMessageRenderer.authorBadges,
     ),
     superChat: {
-      amount: renderer.purchaseAmountText.simpleText,
-      color: convertDecimalToColor(renderer.bodyBackgroundColor),
+      amount: renderer.liveChatPaidMessageRenderer.purchaseAmountText.simpleText,
+      color: convertDecimalToColor(renderer.liveChatPaidMessageRenderer.bodyBackgroundColor),
     },
   };
-  if (renderer.message) {
-    res.messages = parseMessage(renderer.message);
+  if (renderer.liveChatPaidMessageRenderer.message) {
+    res.messages = parseMessage(renderer.liveChatPaidMessageRenderer.message);
   }
 
   return res;
@@ -79,18 +79,18 @@ export function parseLiveChatPaidMessageRenderer(renderer: LiveChatPaidMessageRe
 export function parseLiveChatPaidStickerRenderer(renderer: LiveChatPaidStickerRenderer) {
   const res: ChatItemSuperSticker = {
     type: "superSticker",
-    id: new LiveChatItemId(renderer.id),
-    timestamp: renderer.timestampUsec,
+    id: new LiveChatItemId(renderer.liveChatPaidStickerRenderer.id),
+    timestamp: renderer.liveChatPaidStickerRenderer.timestampUsec,
     author: makeAuthor(
-      renderer.authorExternalChannelId,
-      renderer.authorName,
-      renderer.authorPhoto.thumbnails,
-      renderer.authorBadges,
+      renderer.liveChatPaidStickerRenderer.authorExternalChannelId,
+      renderer.liveChatPaidStickerRenderer.authorName,
+      renderer.liveChatPaidStickerRenderer.authorPhoto,
+      renderer.liveChatPaidStickerRenderer.authorBadges,
     ),
     superSticker: {
-      amount: renderer.purchaseAmountText.simpleText,
-      thumbnails: parseThumbnails(renderer.sticker.thumbnails),
-      color: convertDecimalToColor(renderer.backgroundColor),
+      amount: renderer.liveChatPaidStickerRenderer.purchaseAmountText.simpleText,
+      thumbnails: parseThumbnails(renderer.liveChatPaidStickerRenderer.sticker),
+      color: convertDecimalToColor(renderer.liveChatPaidStickerRenderer.backgroundColor),
     },
   };
 
@@ -100,38 +100,43 @@ export function parseLiveChatPaidStickerRenderer(renderer: LiveChatPaidStickerRe
 export function parseLiveChatMembershipItemRenderer(
   renderer: LiveChatMembershipItemRenderer,
 ): MembershipItem {
-  if (renderer.headerPrimaryText) {
+  if (renderer.liveChatMembershipItemRenderer.headerPrimaryText) {
     // milestone
     const res: MembershipMilestone = {
       type: "milestone",
-      id: new LiveChatItemId(renderer.id),
-      timestamp: renderer.timestampUsec,
+      id: new LiveChatItemId(renderer.liveChatMembershipItemRenderer.id),
+      timestamp: renderer.liveChatMembershipItemRenderer.timestampUsec,
       author: makeAuthor(
-        renderer.authorExternalChannelId,
-        renderer.authorName,
-        renderer.authorPhoto.thumbnails,
-        renderer.authorBadges,
+        renderer.liveChatMembershipItemRenderer.authorExternalChannelId,
+        renderer.liveChatMembershipItemRenderer.authorName,
+        renderer.liveChatMembershipItemRenderer.authorPhoto,
+        renderer.liveChatMembershipItemRenderer.authorBadges,
       ),
-      milestone: parseMessage(renderer.headerPrimaryText),
+      milestone: parseMessage(renderer.liveChatMembershipItemRenderer.headerPrimaryText),
     };
-    if (renderer.message) {
-      res.messages = parseMessage(renderer.message);
+    if (renderer.liveChatMembershipItemRenderer.message) {
+      res.messages = parseMessage(renderer.liveChatMembershipItemRenderer.message);
     }
     return res;
   } else {
     const messages: MessageItem[] =
-      "simpleText" in renderer.headerSubtext
-        ? [{ type: "text", text: renderer.headerSubtext.simpleText } as TextMessage]
-        : parseMessage(renderer.headerSubtext);
+      "simpleText" in renderer.liveChatMembershipItemRenderer.headerSubtext
+        ? [
+            {
+              type: "text",
+              text: renderer.liveChatMembershipItemRenderer.headerSubtext.simpleText,
+            } as TextMessage,
+          ]
+        : parseMessage(renderer.liveChatMembershipItemRenderer.headerSubtext);
     return {
       type: "new",
-      id: new LiveChatItemId(renderer.id),
-      timestamp: renderer.timestampUsec,
+      id: new LiveChatItemId(renderer.liveChatMembershipItemRenderer.id),
+      timestamp: renderer.liveChatMembershipItemRenderer.timestampUsec,
       author: makeAuthor(
-        renderer.authorExternalChannelId,
-        renderer.authorName,
-        renderer.authorPhoto.thumbnails,
-        renderer.authorBadges,
+        renderer.liveChatMembershipItemRenderer.authorExternalChannelId,
+        renderer.liveChatMembershipItemRenderer.authorName,
+        renderer.liveChatMembershipItemRenderer.authorPhoto,
+        renderer.liveChatMembershipItemRenderer.authorBadges,
       ),
       messages: messages,
     };
@@ -143,13 +148,22 @@ export function parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(
 ): SponsorshipsGift {
   return {
     author: makeAuthor(
-      renderer.authorExternalChannelId,
-      renderer.header.liveChatSponsorshipsHeaderRenderer.authorName,
-      renderer.header.liveChatSponsorshipsHeaderRenderer.authorPhoto.thumbnails,
-      renderer.header.liveChatSponsorshipsHeaderRenderer.authorBadges,
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.authorExternalChannelId,
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.header
+        .liveChatSponsorshipsHeaderRenderer.authorName,
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.header
+        .liveChatSponsorshipsHeaderRenderer.authorPhoto,
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.header
+        .liveChatSponsorshipsHeaderRenderer.authorBadges,
     ),
-    messages: parseMessage(renderer.header.liveChatSponsorshipsHeaderRenderer.primaryText),
-    images: parseThumbnails(renderer.header.liveChatSponsorshipsHeaderRenderer.image.thumbnails),
+    messages: parseMessage(
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.header
+        .liveChatSponsorshipsHeaderRenderer.primaryText,
+    ),
+    images: parseThumbnails(
+      renderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer.header
+        .liveChatSponsorshipsHeaderRenderer.image,
+    ),
   };
 }
 
@@ -157,15 +171,15 @@ export function parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(
   renderer: LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
 ): GiftRedemption {
   return {
-    id: new LiveChatItemId(renderer.id),
-    timestamp: renderer.timestampUsec,
+    id: new LiveChatItemId(renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.id),
+    timestamp: renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.timestampUsec,
     author: makeAuthor(
-      renderer.authorExternalChannelId,
-      renderer.authorName,
-      renderer.authorPhoto.thumbnails,
+      renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.authorExternalChannelId,
+      renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.authorName,
+      renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.authorPhoto,
       undefined,
     ),
-    messages: parseMessage(renderer.message),
+    messages: parseMessage(renderer.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer.message),
   };
 }
 
@@ -189,9 +203,10 @@ export function parseLiveChatTickerPaidMessageItemRenderer(
 ): SuperChatTicker {
   return {
     type: "superChat",
-    durationSec: renderer.durationSec,
+    durationSec: renderer.liveChatTickerPaidMessageItemRenderer.durationSec,
     item: parseLiveChatPaidMessageRenderer(
-      renderer.showItemEndpoint.showLiveChatItemEndpoint.renderer.liveChatPaidMessageRenderer,
+      renderer.liveChatTickerPaidMessageItemRenderer.showItemEndpoint.showLiveChatItemEndpoint
+        .renderer,
     ),
   };
 }
@@ -201,9 +216,10 @@ export function parseLiveChatTickerPaidStickerItemRenderer(
 ): SuperStickerTicker {
   return {
     type: "superSticker",
-    durationSec: renderer.durationSec,
+    durationSec: renderer.liveChatTickerPaidStickerItemRenderer.durationSec,
     item: parseLiveChatPaidStickerRenderer(
-      renderer.showItemEndpoint.showLiveChatItemEndpoint.renderer.liveChatPaidStickerRenderer,
+      renderer.liveChatTickerPaidStickerItemRenderer.showItemEndpoint.showLiveChatItemEndpoint
+        .renderer,
     ),
   };
 }
@@ -211,26 +227,30 @@ export function parseLiveChatTickerPaidStickerItemRenderer(
 export function parseLiveChatTickerSponsorItemRenderer(
   renderer: LiveChatTickerSponsorItemRenderer,
 ): MembershipTicker | GiftTicker {
-  const innerRenderer = renderer.showItemEndpoint.showLiveChatItemEndpoint.renderer;
+  const innerRenderer =
+    renderer.liveChatTickerSponsorItemRenderer.showItemEndpoint.showLiveChatItemEndpoint.renderer;
   const messages: MessageItem[] =
-    "simpleText" in renderer.detailText
-      ? [{ type: "text", text: renderer.detailText.simpleText } as TextMessage]
-      : parseMessage(renderer.detailText);
+    "simpleText" in renderer.liveChatTickerSponsorItemRenderer.detailText
+      ? [
+          {
+            type: "text",
+            text: renderer.liveChatTickerSponsorItemRenderer.detailText.simpleText,
+          } as TextMessage,
+        ]
+      : parseMessage(renderer.liveChatTickerSponsorItemRenderer.detailText);
   if ("liveChatMembershipItemRenderer" in innerRenderer) {
     return {
       type: "membership",
-      durationSec: renderer.durationSec,
+      durationSec: renderer.liveChatTickerSponsorItemRenderer.durationSec,
       messages: messages,
-      item: parseLiveChatMembershipItemRenderer(innerRenderer.liveChatMembershipItemRenderer),
+      item: parseLiveChatMembershipItemRenderer(innerRenderer),
     };
   } else if ("liveChatSponsorshipsGiftPurchaseAnnouncementRenderer" in innerRenderer) {
     return {
       type: "gift",
-      durationSec: renderer.durationSec,
+      durationSec: renderer.liveChatTickerSponsorItemRenderer.durationSec,
       messages: messages,
-      item: parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(
-        innerRenderer.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
-      ),
+      item: parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(innerRenderer),
     };
   } else {
     throw new UnknownJsonDataError(innerRenderer, `Unknown type detected. ${innerRenderer}`);
@@ -238,7 +258,7 @@ export function parseLiveChatTickerSponsorItemRenderer(
 }
 
 function parseThumbnails(thumbnails: Thumbnails): Image[] {
-  return thumbnails.map((thumbnail) => parseThumbnail(thumbnail));
+  return thumbnails.thumbnails.map((thumbnail) => parseThumbnail(thumbnail));
 }
 
 function parseThumbnail(thumbnail: Thumbnail): Image {
@@ -279,7 +299,7 @@ function getMemberships(authorBadges?: AuthorBadges): Memberships | undefined {
     for (const item of authorBadges) {
       if (item.liveChatAuthorBadgeRenderer.customThumbnail) {
         return {
-          thumbnails: parseThumbnails(item.liveChatAuthorBadgeRenderer.customThumbnail.thumbnails),
+          thumbnails: parseThumbnails(item.liveChatAuthorBadgeRenderer.customThumbnail),
           label: item.liveChatAuthorBadgeRenderer.tooltip,
         };
       }
@@ -306,7 +326,7 @@ function parseMessage(message: Message): MessageItem[] {
       }
       res.push({
         type: "images",
-        images: parseThumbnails(item.emoji.image.thumbnails),
+        images: parseThumbnails(item.emoji.image),
       });
     }
     i++;
