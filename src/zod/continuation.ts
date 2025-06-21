@@ -24,7 +24,7 @@ export const reloadContinuationDataSchema = z.object({
     continuation: z.string(),
   }),
 });
-export type reloadContinuationData = z.infer<typeof reloadContinuationDataSchema>;
+export type ReloadContinuationData = z.infer<typeof reloadContinuationDataSchema>;
 
 export const continuationsSchema = z
   .array(
