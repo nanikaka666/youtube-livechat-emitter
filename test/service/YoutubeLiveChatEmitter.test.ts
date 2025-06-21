@@ -1,0 +1,231 @@
+import { on } from "events";
+import { YoutubeLiveChatEmitter } from "../../src";
+import { YoutubeLiveChatApi } from "../../src/service/YoutubeLiveChatApi";
+import { AxiosError } from "axios";
+import { Actions } from "../../src/zod/action";
+import {
+  AddChatItemAction_SuperChat,
+  AddChatItemAction_SuperSticker,
+  AddChatItemAction_TextMessage,
+} from "../fixture/addChatItemAction";
+import { ChatItemText, LiveChatItem } from "../../src/types/liveChat";
+import {
+  parseLiveChatPaidMessageRenderer,
+  parseLiveChatPaidStickerRenderer,
+  parseLiveChatTextMessageRenderer,
+} from "../../src/parser/RendererParser";
+import {
+  LiveChatPaidMessageRenderer,
+  LiveChatPaidStickerRenderer,
+  LiveChatTextMessageRenderer,
+} from "../../src/zod/renderer";
+import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
+import { LiveChatItemId } from "../../src/core/LiveChatItemId";
+
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.clearAllTimers();
+  jest.useRealTimers();
+  jest.clearAllMocks();
+});
+
+describe("check about the start event", () => {
+  test("emitting start event is well work", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve(undefined));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onStart = jest.fn();
+    emitter.on("start", onStart);
+    expect(onStart).toHaveBeenCalledTimes(0);
+    expect(await emitter.start()).toBe(true);
+    expect(onStart).toHaveBeenCalledTimes(1);
+  });
+
+  test("if start() called multiple times accidently, start event is emitted only once", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve(undefined));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onStart = jest.fn();
+    emitter.on("start", onStart);
+    expect(await emitter.start()).toBe(true);
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(await emitter.start()).toBe(false);
+    expect(onStart).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("check about the end event", () => {
+  test("emitting end event is well work", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve(undefined));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onEnd = jest.fn();
+    emitter.on("end", onEnd);
+    await emitter.start();
+    expect(onEnd).toHaveBeenCalledTimes(0);
+    emitter.close();
+    expect(onEnd).toHaveBeenCalledTimes(1);
+  });
+
+  test("if close() called multiple times accidently, end event is emitted only once", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve(undefined));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onEnd = jest.fn();
+    emitter.on("end", onEnd);
+    await emitter.start();
+    emitter.close();
+    expect(onEnd).toHaveBeenCalledTimes(1);
+    emitter.close();
+    expect(onEnd).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("check about the error event", () => {
+  test("error event is emitted, when throwing exception in starting", async () => {
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "init")
+      .mockImplementation(() => Promise.reject(new Error("trouble")));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onError = jest.fn();
+    emitter.on("error", onError);
+
+    expect(onError).toHaveBeenCalledTimes(0);
+    expect(await emitter.start()).toBe(false);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(new Error("trouble"));
+  });
+
+  test("error event is emitted, when throwing exception in execute()", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.reject(new AxiosError("connection trouble")));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onError = jest.fn();
+    emitter.on("error", onError);
+
+    await emitter.start();
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(new AxiosError("connection trouble"));
+  });
+});
+
+describe("check about the addChat event", () => {
+  test("addChat event is emitted with normal text chat", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve([AddChatItemAction_TextMessage] satisfies Actions));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddChat = jest.fn();
+    emitter.on("addChat", onAddChat);
+
+    expect(onAddChat).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddChat).toHaveBeenCalledTimes(1);
+    expect(onAddChat).toHaveBeenCalledWith(
+      parseLiveChatTextMessageRenderer(
+        AddChatItemAction_TextMessage.addChatItemAction.item as LiveChatTextMessageRenderer,
+      ),
+    );
+  });
+  test("addChat event is emitted with superchat", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve([AddChatItemAction_SuperChat] satisfies Actions));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddChat = jest.fn();
+    emitter.on("addChat", onAddChat);
+
+    expect(onAddChat).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddChat).toHaveBeenCalledTimes(1);
+    expect(onAddChat).toHaveBeenCalledWith(
+      parseLiveChatPaidMessageRenderer(
+        AddChatItemAction_SuperChat.addChatItemAction.item as LiveChatPaidMessageRenderer,
+      ),
+    );
+  });
+  test("addChat event is emitted with supersticker", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddChatItemAction_SuperSticker] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddChat = jest.fn();
+    emitter.on("addChat", onAddChat);
+
+    expect(onAddChat).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddChat).toHaveBeenCalledTimes(1);
+    expect(onAddChat).toHaveBeenCalledWith(
+      parseLiveChatPaidStickerRenderer(
+        AddChatItemAction_SuperSticker.addChatItemAction.item as LiveChatPaidStickerRenderer,
+      ),
+    );
+  });
+  test("emitted events are kept orders as receiving chat api sequences", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([
+          AddChatItemAction_SuperSticker,
+          AddChatItemAction_SuperChat,
+        ] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddChat = jest.fn();
+    emitter.on("addChat", onAddChat);
+
+    expect(onAddChat).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddChat).toHaveBeenCalledTimes(2);
+    expect(onAddChat).toHaveBeenNthCalledWith(
+      1,
+      parseLiveChatPaidStickerRenderer(
+        AddChatItemAction_SuperSticker.addChatItemAction.item as LiveChatPaidStickerRenderer,
+      ),
+    );
+    expect(onAddChat).toHaveBeenNthCalledWith(
+      2,
+      parseLiveChatPaidMessageRenderer(
+        AddChatItemAction_SuperChat.addChatItemAction.item as LiveChatPaidMessageRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the removeChat event", () => {
+  test("removeChat event emitted when chat deleted", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve([RemoveChatItemAction_01] satisfies Actions));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onRemoveChat = jest.fn();
+    emitter.on("removeChat", onRemoveChat);
+
+    expect(onRemoveChat).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onRemoveChat).toHaveBeenCalledTimes(1);
+    expect(onRemoveChat).toHaveBeenCalledWith(
+      new LiveChatItemId(RemoveChatItemAction_01.removeChatItemAction.targetItemId),
+    );
+  });
+});
