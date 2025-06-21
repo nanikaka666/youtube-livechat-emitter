@@ -23,6 +23,7 @@ import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import { RemoveChatItemByAuthorAction_01 } from "../fixture/removeChatItemByAuthorAction";
 import { ChannelId } from "../../src/core/ChannelId";
+import { AddBannerToLiveChatCommand_PinnedMessage } from "../fixture/addBannerToLiveChatCommand";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -249,6 +250,30 @@ describe("check about the blockUser event", () => {
     expect(onBlockUser).toHaveBeenCalledTimes(1);
     expect(onBlockUser).toHaveBeenCalledWith(
       new ChannelId(RemoveChatItemByAuthorAction_01.removeChatItemByAuthorAction.externalChannelId),
+    );
+  });
+});
+
+describe("check about the pinned event", () => {
+  test("pinned event is emitted by owner operation", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddBannerToLiveChatCommand_PinnedMessage] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onPinned = jest.fn();
+    emitter.on("pinned", onPinned);
+
+    expect(onPinned).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onPinned).toHaveBeenCalledTimes(1);
+    expect(onPinned).toHaveBeenCalledWith(
+      parseLiveChatTextMessageRenderer(
+        AddBannerToLiveChatCommand_PinnedMessage.addBannerToLiveChatCommand.bannerRenderer
+          .liveChatBannerRenderer.contents as LiveChatTextMessageRenderer,
+      ),
     );
   });
 });
