@@ -20,6 +20,9 @@ import {
   parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
+  parseLiveChatTickerPaidMessageItemRenderer,
+  parseLiveChatTickerPaidStickerItemRenderer,
+  parseLiveChatTickerSponsorItemRenderer,
 } from "../../src/parser/RendererParser";
 import {
   LiveChatMembershipItemRenderer,
@@ -28,6 +31,9 @@ import {
   LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   LiveChatTextMessageRenderer,
+  LiveChatTickerPaidMessageItemRenderer,
+  LiveChatTickerPaidStickerItemRenderer,
+  LiveChatTickerSponsorItemRenderer,
 } from "../../src/zod/renderer";
 import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
@@ -35,6 +41,13 @@ import { RemoveChatItemByAuthorAction_01 } from "../fixture/removeChatItemByAuth
 import { ChannelId } from "../../src/core/ChannelId";
 import { AddBannerToLiveChatCommand_PinnedMessage } from "../fixture/addBannerToLiveChatCommand";
 import { RemoveBannerForLiveChatCommand_01 } from "../fixture/removeBannerForLiveChatCommand";
+import {
+  AddLiveChatTickerItemAction_GiftPurchased,
+  AddLiveChatTickerItemAction_MembershipMilestone,
+  AddLiveChatTickerItemAction_NewMembership,
+  AddLiveChatTickerItemAction_SuperChat,
+  AddLiveChatTickerItemAction_SuperSticker,
+} from "../fixture/addLiveChatTickerItemAction";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -421,6 +434,118 @@ describe("check about the redemptionGift event", () => {
       parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(
         AddChatItemAction_SponsorshipsGiftRedemption.addChatItemAction
           .item as LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the addTicker event", () => {
+  test("addTicker event is emitted, by superchat", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddLiveChatTickerItemAction_SuperChat] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddTicker = jest.fn();
+    emitter.on("addTicker", onAddTicker);
+
+    expect(onAddTicker).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddTicker).toHaveBeenCalledTimes(1);
+    expect(onAddTicker).toHaveBeenCalledWith(
+      parseLiveChatTickerPaidMessageItemRenderer(
+        AddLiveChatTickerItemAction_SuperChat.addLiveChatTickerItemAction
+          .item as LiveChatTickerPaidMessageItemRenderer,
+      ),
+    );
+  });
+
+  test("addTicker event is emitted, by super sticker", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddLiveChatTickerItemAction_SuperSticker] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddTicker = jest.fn();
+    emitter.on("addTicker", onAddTicker);
+
+    expect(onAddTicker).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddTicker).toHaveBeenCalledTimes(1);
+    expect(onAddTicker).toHaveBeenCalledWith(
+      parseLiveChatTickerPaidStickerItemRenderer(
+        AddLiveChatTickerItemAction_SuperSticker.addLiveChatTickerItemAction
+          .item as LiveChatTickerPaidStickerItemRenderer,
+      ),
+    );
+  });
+
+  test("addTicker event is emitted, by new membership", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddLiveChatTickerItemAction_NewMembership] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddTicker = jest.fn();
+    emitter.on("addTicker", onAddTicker);
+
+    expect(onAddTicker).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddTicker).toHaveBeenCalledTimes(1);
+    expect(onAddTicker).toHaveBeenCalledWith(
+      parseLiveChatTickerSponsorItemRenderer(
+        AddLiveChatTickerItemAction_NewMembership.addLiveChatTickerItemAction
+          .item as LiveChatTickerSponsorItemRenderer,
+      ),
+    );
+  });
+
+  test("addTicker event is emitted, by membership milestone", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddLiveChatTickerItemAction_MembershipMilestone] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddTicker = jest.fn();
+    emitter.on("addTicker", onAddTicker);
+
+    expect(onAddTicker).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddTicker).toHaveBeenCalledTimes(1);
+    expect(onAddTicker).toHaveBeenCalledWith(
+      parseLiveChatTickerSponsorItemRenderer(
+        AddLiveChatTickerItemAction_MembershipMilestone.addLiveChatTickerItemAction
+          .item as LiveChatTickerSponsorItemRenderer,
+      ),
+    );
+  });
+
+  test("addTicker event is emitted, by purchased the gift", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddLiveChatTickerItemAction_GiftPurchased] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onAddTicker = jest.fn();
+    emitter.on("addTicker", onAddTicker);
+
+    expect(onAddTicker).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onAddTicker).toHaveBeenCalledTimes(1);
+    expect(onAddTicker).toHaveBeenCalledWith(
+      parseLiveChatTickerSponsorItemRenderer(
+        AddLiveChatTickerItemAction_GiftPurchased.addLiveChatTickerItemAction
+          .item as LiveChatTickerSponsorItemRenderer,
       ),
     );
   });
