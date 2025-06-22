@@ -1,4 +1,3 @@
-import { on } from "events";
 import { YoutubeLiveChatEmitter } from "../../src";
 import { YoutubeLiveChatApi } from "../../src/service/YoutubeLiveChatApi";
 import { AxiosError } from "axios";
@@ -12,7 +11,6 @@ import {
   AddChatItemAction_SuperSticker,
   AddChatItemAction_TextMessage,
 } from "../fixture/addChatItemAction";
-import { ChatItemText, LiveChatItem, NewMembership } from "../../src/types/liveChat";
 import {
   parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
