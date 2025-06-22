@@ -4,6 +4,7 @@ import {
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
   LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 
@@ -239,5 +240,26 @@ export const AddChatItemAction_SponsorshipsGiftPurchase: AddChatItemAction = {
         },
       },
     } satisfies LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  },
+};
+
+export const AddChatItemAction_SponsorshipsGiftRedemption: AddChatItemAction = {
+  addChatItemAction: {
+    item: {
+      liveChatSponsorshipsGiftRedemptionAnnouncementRenderer: {
+        id: "LiveChatItemId00000000000000000000000007",
+        timestampUsec: 20000,
+        authorExternalChannelId: "AUTHOR_EXTERNALCHANNELID",
+        authorName: {
+          simpleText: "AUTHOR_NAME",
+        },
+        authorPhoto: {
+          thumbnails: [{ url: "AUTHOR IMAGE URL", width: 32, height: 32 }],
+        },
+        message: {
+          runs: [{ text: "was gifted a membership by " }, { text: "Name of gift purchased" }],
+        },
+      },
+    } satisfies LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   },
 };

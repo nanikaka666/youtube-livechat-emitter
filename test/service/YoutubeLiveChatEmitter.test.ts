@@ -7,6 +7,7 @@ import {
   AddChatItemAction_MembershipMilestone,
   AddChatItemAction_NewMembership,
   AddChatItemAction_SponsorshipsGiftPurchase,
+  AddChatItemAction_SponsorshipsGiftRedemption,
   AddChatItemAction_SuperChat,
   AddChatItemAction_SuperSticker,
   AddChatItemAction_TextMessage,
@@ -17,6 +18,7 @@ import {
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
   parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/parser/RendererParser";
 import {
@@ -24,6 +26,7 @@ import {
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
   LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
@@ -394,6 +397,30 @@ describe("check about the sponsorshipsGift event", () => {
       parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(
         AddChatItemAction_SponsorshipsGiftPurchase.addChatItemAction
           .item as LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+      ),
+    );
+  });
+});
+
+describe("check about the redemptionGift event", () => {
+  test("redemptionGift event is emitted when someone took the gift which others purchased", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([AddChatItemAction_SponsorshipsGiftRedemption] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onRedemptionGift = jest.fn();
+    emitter.on("redemptionGift", onRedemptionGift);
+
+    expect(onRedemptionGift).toHaveBeenCalledTimes(0);
+    await emitter.start();
+    expect(onRedemptionGift).toHaveBeenCalledTimes(1);
+    expect(onRedemptionGift).toHaveBeenCalledWith(
+      parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(
+        AddChatItemAction_SponsorshipsGiftRedemption.addChatItemAction
+          .item as LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
       ),
     );
   });
