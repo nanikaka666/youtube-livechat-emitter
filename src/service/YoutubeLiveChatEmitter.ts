@@ -27,7 +27,7 @@ import {
   parseLiveChatTickerPaidMessageItemRenderer,
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
-} from "../parser/RendererParser";
+} from "./RendererParser";
 import { UnknownJsonDataError } from "../core/errors";
 import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";

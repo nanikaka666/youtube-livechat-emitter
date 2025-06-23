@@ -21,7 +21,7 @@ import {
   parseLiveChatTickerPaidMessageItemRenderer,
   parseLiveChatTickerPaidStickerItemRenderer,
   parseLiveChatTickerSponsorItemRenderer,
-} from "../../src/parser/RendererParser";
+} from "../../src/service/RendererParser";
 import {
   LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
