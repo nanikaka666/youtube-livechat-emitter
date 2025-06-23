@@ -4,6 +4,7 @@ import {
   parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
+  parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/service/RendererParser";
 import {
@@ -18,6 +19,7 @@ import {
   NewMembership,
   Orange,
   Red,
+  SponsorshipsGift,
   Yellow,
   YellowGreen,
 } from "../../src/types/liveChat";
@@ -25,6 +27,7 @@ import {
   LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
+  LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 
@@ -1108,5 +1111,105 @@ describe("parseLiveChatMembershipItemRenderer", () => {
       messages: [{ type: "text", text: "Hello, i am a long member." }],
       milestone: [{ type: "text", text: "Membership continues 11 months" }],
     } satisfies MembershipMilestone);
+  });
+});
+
+describe("parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer", () => {
+  test("someone purchased gift.", () => {
+    const renderer: LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer = {
+      liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: {
+        header: {
+          liveChatSponsorshipsHeaderRenderer: {
+            authorName: {
+              simpleText: "Author Name",
+            },
+            authorPhoto: {
+              thumbnails: [
+                { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+                { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+              ],
+            },
+            primaryText: {
+              runs: [
+                { text: "Gifted " },
+                { text: "1" },
+                { text: " " },
+                { text: "Membership Name" },
+                { text: " memberships" },
+              ],
+            },
+            authorBadges: [
+              {
+                liveChatAuthorBadgeRenderer: {
+                  tooltip: "6 months",
+                  customThumbnail: {
+                    thumbnails: [
+                      {
+                        url: "https://example.com/custom/1",
+                        width: 16,
+                        height: 16,
+                      },
+                      {
+                        url: "https://example.com/custom/1",
+                        width: 32,
+                        height: 32,
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+            image: {
+              thumbnails: [{ url: "https://example.com/gift" }], // don't have sizes
+            },
+          },
+        },
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+      },
+    };
+    expect(parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer)).toEqual({
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: {
+          label: "6 months",
+          thumbnails: [
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 16,
+                height: 16,
+              },
+            },
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 32,
+                height: 32,
+              },
+            },
+          ],
+        },
+      },
+      messages: [{ type: "text", text: "Gifted 1 Membership Name memberships" }],
+      images: [{ url: "https://example.com/gift" }],
+    } satisfies SponsorshipsGift);
   });
 });
