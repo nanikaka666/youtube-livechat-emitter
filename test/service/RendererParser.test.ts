@@ -1,6 +1,7 @@
 import { ChannelId } from "../../src/core/ChannelId";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import {
+  parseLiveChatMembershipItemRenderer,
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
   parseLiveChatTextMessageRenderer,
@@ -12,12 +13,16 @@ import {
   ChatItemText,
   LightBlue,
   Magenta,
+  MembershipItem,
+  MembershipMilestone,
+  NewMembership,
   Orange,
   Red,
   Yellow,
   YellowGreen,
 } from "../../src/types/liveChat";
 import {
+  LiveChatMembershipItemRenderer,
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
   LiveChatTextMessageRenderer,
@@ -823,5 +828,285 @@ describe("parseLiveChatPaidStickerRenderer", () => {
         color: Blue,
       },
     } satisfies ChatItemSuperSticker);
+  });
+});
+
+describe("parseLiveChatMembershipItemRenderer", () => {
+  test("New membership", () => {
+    const renderer: LiveChatMembershipItemRenderer = {
+      liveChatMembershipItemRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorName: {
+          simpleText: "Author Name",
+        },
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        authorBadges: [
+          {
+            liveChatAuthorBadgeRenderer: {
+              tooltip: "New member",
+              customThumbnail: {
+                thumbnails: [
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 16,
+                    height: 16,
+                  },
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 32,
+                    height: 32,
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        timestampUsec: 100000,
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+        headerSubtext: {
+          runs: [{ text: "welcome to " }, { text: "Membership Name." }],
+        },
+      },
+    };
+    expect(parseLiveChatMembershipItemRenderer(renderer)).toEqual({
+      type: "new",
+      id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+      timestamp: 100000,
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: {
+          label: "New member",
+          thumbnails: [
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 16,
+                height: 16,
+              },
+            },
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 32,
+                height: 32,
+              },
+            },
+          ],
+        },
+      },
+      messages: [{ type: "text", text: "welcome to Membership Name." }],
+    } satisfies NewMembership);
+  });
+
+  test("New membership, headerSubtext has only simpleText.", () => {
+    const renderer: LiveChatMembershipItemRenderer = {
+      liveChatMembershipItemRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorName: {
+          simpleText: "Author Name",
+        },
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        authorBadges: [
+          {
+            liveChatAuthorBadgeRenderer: {
+              tooltip: "New member",
+              customThumbnail: {
+                thumbnails: [
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 16,
+                    height: 16,
+                  },
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 32,
+                    height: 32,
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        timestampUsec: 100000,
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+        headerSubtext: {
+          simpleText: "welcome to Membership Name.",
+        },
+      },
+    };
+    expect(parseLiveChatMembershipItemRenderer(renderer)).toEqual({
+      type: "new",
+      id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+      timestamp: 100000,
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: {
+          label: "New member",
+          thumbnails: [
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 16,
+                height: 16,
+              },
+            },
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 32,
+                height: 32,
+              },
+            },
+          ],
+        },
+      },
+      messages: [{ type: "text", text: "welcome to Membership Name." }],
+    } satisfies NewMembership);
+  });
+
+  test("Membership Milestone", () => {
+    const renderer: LiveChatMembershipItemRenderer = {
+      liveChatMembershipItemRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorName: {
+          simpleText: "Author Name",
+        },
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        authorBadges: [
+          {
+            liveChatAuthorBadgeRenderer: {
+              tooltip: "6 months",
+              customThumbnail: {
+                thumbnails: [
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 16,
+                    height: 16,
+                  },
+                  {
+                    url: "https://example.com/custom/1",
+                    width: 32,
+                    height: 32,
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        timestampUsec: 100000,
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+        headerPrimaryText: {
+          runs: [{ text: "Membership continues " }, { text: "11 " }, { text: "months" }],
+        },
+        headerSubtext: {
+          simpleText: "Membership Name.",
+        },
+        message: {
+          runs: [
+            {
+              text: "Hello, i am a long member.",
+            },
+          ],
+        },
+      },
+    };
+    expect(parseLiveChatMembershipItemRenderer(renderer)).toEqual({
+      type: "milestone",
+      id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+      timestamp: 100000,
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: {
+          label: "6 months",
+          thumbnails: [
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 16,
+                height: 16,
+              },
+            },
+            {
+              url: "https://example.com/custom/1",
+              size: {
+                width: 32,
+                height: 32,
+              },
+            },
+          ],
+        },
+      },
+      messages: [{ type: "text", text: "Hello, i am a long member." }],
+      milestone: [{ type: "text", text: "Membership continues 11 months" }],
+    } satisfies MembershipMilestone);
   });
 });
