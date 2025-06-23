@@ -2,11 +2,13 @@ import { ChannelId } from "../../src/core/ChannelId";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import {
   parseLiveChatPaidMessageRenderer,
+  parseLiveChatPaidStickerRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/service/RendererParser";
 import {
   Blue,
   ChatItemSuperChat,
+  ChatItemSuperSticker,
   ChatItemText,
   LightBlue,
   Magenta,
@@ -15,7 +17,11 @@ import {
   Yellow,
   YellowGreen,
 } from "../../src/types/liveChat";
-import { LiveChatPaidMessageRenderer, LiveChatTextMessageRenderer } from "../../src/zod/renderer";
+import {
+  LiveChatPaidMessageRenderer,
+  LiveChatPaidStickerRenderer,
+  LiveChatTextMessageRenderer,
+} from "../../src/zod/renderer";
 
 describe("parseLiveChatTextMessageRenderer", () => {
   test("general pattern", () => {
@@ -743,5 +749,79 @@ describe("parseLiveChatPaidMessageRenderer", () => {
         color: Red,
       },
     } satisfies ChatItemSuperChat);
+  });
+});
+
+describe("parseLiveChatPaidStickerRenderer", () => {
+  test("Blue super sticker.", () => {
+    const renderer: LiveChatPaidStickerRenderer = {
+      liveChatPaidStickerRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorName: {
+          simpleText: "Author Name",
+        },
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        timestampUsec: 100000,
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+        purchaseAmountText: {
+          simpleText: "100 yen",
+        },
+        sticker: {
+          thumbnails: [
+            {
+              url: "//example.com/sticker/1",
+              width: 16,
+              height: 16,
+            },
+          ],
+        },
+        backgroundColor: 0xff1e88e5,
+      },
+    };
+    expect(parseLiveChatPaidStickerRenderer(renderer)).toEqual({
+      type: "superSticker",
+      id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+      timestamp: 100000,
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: undefined,
+      },
+      superSticker: {
+        amount: "100 yen",
+        thumbnails: [
+          {
+            url: "https://example.com/sticker/1",
+            size: {
+              width: 16,
+              height: 16,
+            },
+          },
+        ],
+        color: Blue,
+      },
+    } satisfies ChatItemSuperSticker);
   });
 });
