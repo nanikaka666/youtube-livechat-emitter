@@ -88,19 +88,6 @@ export const AddChatItemAction_SuperSticker: AddChatItemAction = {
   addChatItemAction: {
     item: {
       liveChatPaidStickerRenderer: {
-        message: {
-          runs: [
-            { text: "MESSAGE_TEXT_SUPERSTICKER" },
-            {
-              emoji: {
-                emojiId: "EMOJI_ID",
-                image: {
-                  thumbnails: [{ url: "IMAGE URL", width: 16, height: 16 }],
-                },
-              },
-            },
-          ],
-        },
         id: "LiveChatItemId00000000000000000000000003",
         authorName: {
           simpleText: "AUTHOR_NAME",
@@ -116,10 +103,7 @@ export const AddChatItemAction_SuperSticker: AddChatItemAction = {
         sticker: {
           thumbnails: [{ url: "STICKER URL", width: 24, height: 24 }],
         },
-        moneyChipBackgroundColor: 4280191205,
-        moneyChipTextColor: 4294967295,
         backgroundColor: 4280191205,
-        authorNameTextColor: 3019898879,
       },
     } satisfies LiveChatPaidStickerRenderer,
   },
