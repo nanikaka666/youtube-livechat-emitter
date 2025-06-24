@@ -81,13 +81,9 @@ export type LiveChatTickerPaidMessageItemRenderer = z.infer<
 export const liveChatPaidStickerRendererSchema = z.object({
   liveChatPaidStickerRenderer: z
     .object({
-      message: messageSchema.optional(),
       purchaseAmountText: z.object({ simpleText: z.string() }),
       sticker: thumbnailsSchema, // "https:" is always missing...?
-      moneyChipBackgroundColor: z.coerce.number(),
-      moneyChipTextColor: z.coerce.number(),
       backgroundColor: z.coerce.number(),
-      authorNameTextColor: z.coerce.number(),
     })
     .and(messageRendererBaseSchema),
 });
