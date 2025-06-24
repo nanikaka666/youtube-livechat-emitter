@@ -7,6 +7,7 @@ import {
   parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
+  parseLiveChatTickerPaidMessageItemRenderer,
 } from "../../src/service/RendererParser";
 import {
   Blue,
@@ -22,6 +23,7 @@ import {
   Orange,
   Red,
   SponsorshipsGift,
+  SuperChatTicker,
   Yellow,
   YellowGreen,
 } from "../../src/types/liveChat";
@@ -32,6 +34,7 @@ import {
   LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
   LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   LiveChatTextMessageRenderer,
+  LiveChatTickerPaidMessageItemRenderer,
 } from "../../src/zod/renderer";
 
 describe("parseLiveChatTextMessageRenderer", () => {
@@ -1272,5 +1275,85 @@ describe("parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer", () => {
       },
       messages: [{ type: "text", text: "was gifted a membership by Gift sender name" }],
     } satisfies GiftRedemption);
+  });
+});
+
+describe("parseLiveChatTickerPaidMessageItemRenderer", () => {
+  test("someone purchased super chat", () => {
+    const renderer: LiveChatTickerPaidMessageItemRenderer = {
+      liveChatTickerPaidMessageItemRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        durationSec: 300,
+        showItemEndpoint: {
+          showLiveChatItemEndpoint: {
+            renderer: {
+              liveChatPaidMessageRenderer: {
+                id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+                authorName: {
+                  simpleText: "Author Name",
+                },
+                authorPhoto: {
+                  thumbnails: [
+                    { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+                    { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+                  ],
+                },
+                timestampUsec: 100000,
+                authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+                message: {
+                  runs: [{ text: "superchat" }],
+                },
+                purchaseAmountText: {
+                  simpleText: "200 yen",
+                },
+                bodyBackgroundColor: 0xff00e5ff,
+              },
+            },
+          },
+        },
+      },
+    };
+    expect(parseLiveChatTickerPaidMessageItemRenderer(renderer)).toEqual({
+      type: "superChat",
+      durationSec: 300,
+      item: {
+        type: "superChat",
+        id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+        timestamp: 100000,
+        author: {
+          channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+          name: "Author Name",
+          thumbnails: [
+            {
+              url: "https://example.com/icon/1.png",
+              size: {
+                width: 32,
+                height: 32,
+              },
+            },
+            {
+              url: "https://example.com/icon/1.png",
+              size: {
+                width: 48,
+                height: 48,
+              },
+            },
+          ],
+          authorType: "general",
+          memberships: undefined,
+        },
+        messages: [{ type: "text", text: "superchat" }],
+        superChat: {
+          amount: "200 yen",
+          color: LightBlue,
+        },
+      },
+    } satisfies SuperChatTicker);
   });
 });
