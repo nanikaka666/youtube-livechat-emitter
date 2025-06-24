@@ -5,6 +5,7 @@ import {
   parseLiveChatPaidMessageRenderer,
   parseLiveChatPaidStickerRenderer,
   parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   parseLiveChatTextMessageRenderer,
 } from "../../src/service/RendererParser";
 import {
@@ -12,6 +13,7 @@ import {
   ChatItemSuperChat,
   ChatItemSuperSticker,
   ChatItemText,
+  GiftRedemption,
   LightBlue,
   Magenta,
   MembershipItem,
@@ -28,6 +30,7 @@ import {
   LiveChatPaidMessageRenderer,
   LiveChatPaidStickerRenderer,
   LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+  LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer,
   LiveChatTextMessageRenderer,
 } from "../../src/zod/renderer";
 
@@ -1211,5 +1214,63 @@ describe("parseLiveChatSponsorshipsGiftPurchaseAnnouncementRenderer", () => {
       messages: [{ type: "text", text: "Gifted 1 Membership Name memberships" }],
       images: [{ url: "https://example.com/gift" }],
     } satisfies SponsorshipsGift);
+  });
+});
+
+describe("parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer", () => {
+  test("someone receive gift", () => {
+    const renderer: LiveChatSponsorshipsGiftRedemptionAnnouncementRenderer = {
+      liveChatSponsorshipsGiftRedemptionAnnouncementRenderer: {
+        id: "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001",
+        authorName: {
+          simpleText: "Author Name",
+        },
+        authorPhoto: {
+          thumbnails: [
+            { url: "https://example.com/icon/1.png", width: 32, height: 32 },
+            { url: "https://example.com/icon/1.png", width: 48, height: 48 },
+          ],
+        },
+        timestampUsec: 100000,
+        authorExternalChannelId: "UCAXPWkBVUzxCSrBiqDon001",
+        message: {
+          runs: [
+            {
+              text: "was gifted a membership by ",
+            },
+            {
+              text: "Gift sender name",
+            },
+          ],
+        },
+      },
+    };
+    expect(parseLiveChatSponsorshipsGiftRedemptionAnnouncementRenderer(renderer)).toEqual({
+      id: new LiveChatItemId("ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJY001"),
+      timestamp: 100000,
+      author: {
+        channelId: new ChannelId("UCAXPWkBVUzxCSrBiqDon001"),
+        name: "Author Name",
+        thumbnails: [
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 32,
+              height: 32,
+            },
+          },
+          {
+            url: "https://example.com/icon/1.png",
+            size: {
+              width: 48,
+              height: 48,
+            },
+          },
+        ],
+        authorType: "general",
+        memberships: undefined,
+      },
+      messages: [{ type: "text", text: "was gifted a membership by Gift sender name" }],
+    } satisfies GiftRedemption);
   });
 });
