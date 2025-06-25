@@ -57,6 +57,19 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe("Emitter config.", () => {
+  test("interval of fetching live chat api is same as input to constructor", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve(undefined));
+    jest.spyOn(global, "setTimeout");
+    const emitter = new YoutubeLiveChatEmitter("@test_channel", 1000);
+    await emitter.start();
+    expect(jest.mocked(setTimeout).mock.calls.at(0)?.[1]).toEqual(1000);
+  });
+});
+
 describe("check about the start event", () => {
   test("emitting start event is well work", async () => {
     jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
