@@ -7,7 +7,7 @@
   "types": "./dist/src/index.d.ts",
   "files": [
     "./dist/src/**/*.js",
-    "./dist/src/**/*.d.js"
+    "./dist/src/**/*.d.ts"
   ],
   "scripts": {
     "test": "jest --randomize",
