@@ -3,7 +3,6 @@
   "version": "0.1.1",
   "description": "The simple emitter to emit the events of YouTube LiveChat",
   "main": "./dist/src/index.js",
-  "exports": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "files": [
     "./dist/src/**/*.js",
