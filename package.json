@@ -1,8 +1,14 @@
 {
   "name": "youtube-livechat-emitter",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "The simple emitter to emit the events of YouTube LiveChat",
+  "main": "./dist/src/index.js",
+  "exports": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "./dist/src/**/*.js",
+    "./dist/src/**/*.d.js"
+  ],
   "scripts": {
     "test": "jest --randomize",
     "debug": "tsc && node ./dist/debug.js",
@@ -13,9 +19,18 @@
     "type": "git",
     "url": "git+https://github.com/nanikaka666/youtube-livechat-emitter.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "youtube",
+    "live",
+    "chat",
+    "streaming",
+    "emitter"
+  ],
+  "author": "nanikaka <nanikaka666@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/nanikaka666/youtube-livechat-emitter/issues"
   },
