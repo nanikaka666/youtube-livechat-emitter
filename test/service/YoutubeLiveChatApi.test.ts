@@ -6,13 +6,11 @@ import {
 } from "../../src/service/YoutubeLiveChatApi";
 import { ChannelId } from "../../src/core/ChannelId";
 import {
-  Continuations,
   GetLiveChatApiResponse,
   InvalidationContinuationData,
   ReloadContinuationData,
   TimedContinuationData,
 } from "../../src/zod/continuation";
-import { Actions } from "../../src/zod/action";
 import { AxiosError } from "axios";
 
 describe("check correctness in case of no any troubles.", () => {
