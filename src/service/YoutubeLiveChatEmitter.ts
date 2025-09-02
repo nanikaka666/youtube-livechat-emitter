@@ -87,6 +87,8 @@ export class YoutubeLiveChatEmitter extends (EventEmitter as new () => TypedEmit
         );
       } else if ("replaceChatItemAction" in action) {
         // do nothing
+      } else if ("updateLiveChatPollAction" in action) {
+        // do nothing
       } else {
         throw new UnknownJsonDataError(action, `Unknown action detected. ${action}`);
       }
