@@ -1,6 +1,6 @@
 {
   "name": "youtube-livechat-emitter",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "The simple emitter to emit the events of YouTube LiveChat",
   "main": "./dist/src/index.js",
   "exports": "./dist/src/index.js",
