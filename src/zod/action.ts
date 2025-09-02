@@ -88,6 +88,11 @@ export const updateLiveChatPollActionSchema = z.object({
 });
 export type UpdateLiveChatPollAction = z.infer<typeof updateLiveChatPollActionSchema>;
 
+export const showLiveChatActionPanelActionSchema = z.object({
+  showLiveChatActionPanelAction: z.object({}),
+});
+export type ShowLiveChatActionPanelAction = z.infer<typeof showLiveChatActionPanelActionSchema>;
+
 export const actionsSchema = z.array(
   z.union([
     addChatItemActionSchema,
@@ -99,6 +104,7 @@ export const actionsSchema = z.array(
     removeChatItemByAuthorActionSchema,
     replaceChatItemActionSchema,
     updateLiveChatPollActionSchema,
+    showLiveChatActionPanelActionSchema,
   ]),
 );
 export type Actions = z.infer<typeof actionsSchema>; // Action
