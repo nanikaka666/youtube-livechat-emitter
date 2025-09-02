@@ -31,6 +31,7 @@ export const iconTypeSchema = z.object({
     z.literal("YOUTUBE_ROUND"),
     z.literal("VERIFIED"),
     z.literal("SLOW_MODE"),
+    z.literal("POLL"),
   ]),
 });
 export type IconType = z.infer<typeof iconTypeSchema>;
