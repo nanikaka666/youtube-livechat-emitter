@@ -46,6 +46,7 @@ import {
   AddLiveChatTickerItemAction_SuperChat,
   AddLiveChatTickerItemAction_SuperSticker,
 } from "../fixture/addLiveChatTickerItemAction";
+import { UpdateLiveChatPollAction_01 } from "../fixture/updateLiveChatPollAction";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -157,6 +158,19 @@ describe("check about the error event", () => {
     await emitter.start();
     expect(onError).toHaveBeenCalledTimes(1);
     expect(onError).toHaveBeenCalledWith(new AxiosError("connection trouble"));
+  });
+
+  test.only("updateLiveChatPollAction is included, no Error will be occurred.", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() => Promise.resolve([UpdateLiveChatPollAction_01] satisfies Actions));
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onError = jest.fn();
+    emitter.on("error", onError);
+
+    await emitter.start();
+    expect(onError).toHaveBeenCalledTimes(0);
   });
 });
 
