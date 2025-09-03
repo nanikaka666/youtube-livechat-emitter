@@ -12,9 +12,12 @@ import {
   TimedContinuationData,
 } from "../../src/zod/continuation";
 import { AxiosError } from "axios";
+import fs from "fs";
+import * as ParseArgsForDebug from "../../src/service/ParseArgsForDebug";
 
 describe("check correctness in case of no any troubles.", () => {
   test("execute one of successful story of calling getNextActions, check each steps.", async () => {
+    jest.spyOn(fs, "writeFileSync").mockImplementation(jest.fn());
     jest.spyOn(YoutubeLivePage, "getPayloadBaseData").mockImplementation(
       jest.fn(() =>
         Promise.resolve({
@@ -128,6 +131,9 @@ describe("check correctness in case of no any troubles.", () => {
       },
       continuation: "CONTINUATION_TEST",
     });
+
+    // file writing never occurred.
+    expect(fs.writeFileSync).toHaveBeenCalledTimes(0);
 
     jest.clearAllMocks();
   });
@@ -332,6 +338,62 @@ describe("check correctness in case of under the troubles.", () => {
       },
       continuation: "CONTINUATION_TEST", // same as first time
     });
+
+    jest.clearAllMocks();
+  });
+
+  test("if output flag is valid and api response contains unknown json structure, a file will be output.", async () => {
+    jest.spyOn(YoutubeLivePage, "getPayloadBaseData").mockImplementation(
+      jest.fn(() =>
+        Promise.resolve({
+          continuation: "CONTINUATION_TEST",
+          apiKey: "API_KEY_TEST",
+          clientName: "CLIENT_NAME_TEST",
+          clientVersion: "CLIENT_VERSION_TEST",
+        } satisfies GetLiveChatApiPayloadBaseData),
+      ) as jest.Mock,
+    );
+
+    const channelId = new ChannelId("@test_channel");
+    const liveChatApi = new YoutubeLiveChatApi(channelId);
+
+    await liveChatApi.init();
+
+    jest.spyOn(fetch, "post").mockImplementation(
+      jest.fn(() =>
+        Promise.resolve({
+          continuationContents: {
+            liveChatContinuation: {
+              continuations: [
+                {
+                  invalidationContinuationData: {
+                    timeoutMs: 1000,
+                    continuation: "NEXT_CONTINUATION",
+                  },
+                },
+              ],
+              actions: [
+                {
+                  unknownTypeOfActions: {},
+                },
+              ],
+            },
+          },
+        }),
+      ) as jest.Mock,
+    );
+    jest.spyOn(fs, "writeFileSync").mockImplementation(jest.fn());
+    jest.spyOn(ParseArgsForDebug, "getOutputFlag").mockReturnValue(true);
+
+    // use try-catch clause, because if test code like below, it bring unexpected results for toHaveBeenCalled
+    // expect(async () => await liveChatApi.getNextActions()).rejects.toThrow(ZodError);
+    try {
+      await liveChatApi.getNextActions();
+    } catch {}
+
+    // the json file will be output, including unknown json structures.
+    expect(ParseArgsForDebug.getOutputFlag).toHaveBeenCalledTimes(1);
+    expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
 
     jest.clearAllMocks();
   });
