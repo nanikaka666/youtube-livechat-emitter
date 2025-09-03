@@ -2,3 +2,4 @@ node_modules/
 dist/
 debug.ts
 src/zod/printFunctions.ts
+out/
