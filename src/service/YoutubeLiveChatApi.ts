@@ -7,7 +7,9 @@ import {
   GetLiveChatApiResponse,
   getLiveChatApiResponseSchema,
 } from "../zod/continuation";
+import { getOutputFlag } from "./ParseArgsForDebug";
 import { getPayloadBaseData } from "./YoutubeLivePage";
+import fs from "fs";
 
 export interface GetLiveChatApiPayloadBaseData {
   continuation: string;
@@ -86,6 +88,15 @@ export class YoutubeLiveChatApi {
     } satisfies GetLiveChatApiPayload;
 
     const res = await post(apiUrl, payload);
+
+    // to grab a contents of api response that can not be parsed, weird if statement is here for it.
+    // if --output-error-response command option is given then output the response onto out/ directory.
+    if (getOutputFlag() && !getLiveChatApiResponseSchema.safeParse(res).success) {
+      const date = new Date();
+      const timeString = `${date.getFullYear()}_${date.getMonth()}_${date.getDay()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
+      const outputFileName = `./out/error-${this.#channelId.id}-${timeString}.json`;
+      fs.writeFileSync(outputFileName, JSON.stringify(res));
+    }
     return getLiveChatApiResponseSchema.parse(res);
   }
 }
