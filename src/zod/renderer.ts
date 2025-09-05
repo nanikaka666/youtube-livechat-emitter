@@ -41,7 +41,7 @@ export const liveChatTextMessageRendererSchema = z.object({
 export type LiveChatTextMessageRenderer = z.infer<typeof liveChatTextMessageRendererSchema>;
 export const liveChatViewerEngagementMessageRendererSchema = z.object({
   liveChatViewerEngagementMessageRenderer: z.object({
-    timestampUsec: timestampUsecSchema,
+    timestampUsec: timestampUsecSchema.optional(),
     icon: iconTypeSchema,
   }),
 });
