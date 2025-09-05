@@ -48,6 +48,7 @@ import {
 } from "../fixture/addLiveChatTickerItemAction";
 import { UpdateLiveChatPollAction_01 } from "../fixture/updateLiveChatPollAction";
 import { ShowLiveChatActionPanelAction_01 } from "../fixture/showLiveChatActionPanelAction";
+import { CloseLiveChatActionPanelAction_01 } from "../fixture/closeLiveChatActionPanelAction";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -180,6 +181,21 @@ describe("check about the error event", () => {
       .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
       .mockImplementation(() =>
         Promise.resolve([ShowLiveChatActionPanelAction_01] satisfies Actions),
+      );
+    const emitter = new YoutubeLiveChatEmitter("@test_channel");
+    const onError = jest.fn();
+    emitter.on("error", onError);
+
+    await emitter.start();
+    expect(onError).toHaveBeenCalledTimes(0);
+  });
+
+  test("closeLiveChatActionPanelAction is included, no Error will be occurred.", async () => {
+    jest.spyOn(YoutubeLiveChatApi.prototype, "init").mockImplementation(() => Promise.resolve());
+    jest
+      .spyOn(YoutubeLiveChatApi.prototype, "getNextActions")
+      .mockImplementation(() =>
+        Promise.resolve([CloseLiveChatActionPanelAction_01] satisfies Actions),
       );
     const emitter = new YoutubeLiveChatEmitter("@test_channel");
     const onError = jest.fn();
