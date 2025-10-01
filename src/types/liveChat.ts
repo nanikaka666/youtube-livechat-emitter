@@ -1,4 +1,4 @@
-import { ChannelId } from "../core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import { LiveChatItemId } from "../core/LiveChatItemId";
 
 export interface ImageSize {

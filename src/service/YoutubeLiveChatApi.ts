@@ -1,4 +1,4 @@
-import { ChannelId } from "../core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import { UnknownJsonDataError } from "../core/errors";
 import { post } from "../infrastructure/fetch";
 import { Actions } from "../zod/action";
