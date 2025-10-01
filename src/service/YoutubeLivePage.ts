@@ -1,7 +1,7 @@
 import { parse } from "node-html-parser";
 import { get } from "../infrastructure/fetch";
 import { GetLiveChatApiPayloadBaseData } from "./YoutubeLiveChatApi";
-import { ChannelId } from "../core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 
 export async function getPayloadBaseData(channelId: ChannelId) {
   const livePageUrl = channelId.isHandle

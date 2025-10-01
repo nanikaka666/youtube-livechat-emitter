@@ -29,9 +29,9 @@ import {
   parseLiveChatTickerSponsorItemRenderer,
 } from "./RendererParser";
 import { UnknownJsonDataError } from "../core/errors";
-import { ChannelId } from "../core/ChannelId";
 import { LiveChatItemId } from "../core/LiveChatItemId";
 import { AxiosError } from "axios";
+import { ChannelId } from "youtube-live-scraper";
 
 export type LiveChatEvent = {
   start: () => void;

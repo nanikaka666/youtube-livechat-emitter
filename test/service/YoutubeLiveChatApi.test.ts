@@ -4,7 +4,6 @@ import {
   GetLiveChatApiPayloadBaseData,
   YoutubeLiveChatApi,
 } from "../../src/service/YoutubeLiveChatApi";
-import { ChannelId } from "../../src/core/ChannelId";
 import {
   GetLiveChatApiResponse,
   InvalidationContinuationData,
@@ -14,6 +13,7 @@ import {
 import { AxiosError } from "axios";
 import fs from "fs";
 import * as ParseArgsForDebug from "../../src/service/ParseArgsForDebug";
+import { ChannelId } from "youtube-live-scraper";
 
 describe("check correctness in case of no any troubles.", () => {
   test("execute one of successful story of calling getNextActions, check each steps.", async () => {

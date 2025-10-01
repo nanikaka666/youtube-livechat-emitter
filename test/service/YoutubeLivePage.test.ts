@@ -1,4 +1,4 @@
-import { ChannelId } from "../../src/core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import * as fetch from "../../src/infrastructure/fetch";
 import { getPayloadBaseData } from "../../src/service/YoutubeLivePage";
 

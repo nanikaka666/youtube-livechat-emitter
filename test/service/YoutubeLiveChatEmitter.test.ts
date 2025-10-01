@@ -36,7 +36,6 @@ import {
 import { RemoveChatItemAction_01 } from "../fixture/removeChatItemAction";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import { RemoveChatItemByAuthorAction_01 } from "../fixture/removeChatItemByAuthorAction";
-import { ChannelId } from "../../src/core/ChannelId";
 import { AddBannerToLiveChatCommand_PinnedMessage } from "../fixture/addBannerToLiveChatCommand";
 import { RemoveBannerForLiveChatCommand_01 } from "../fixture/removeBannerForLiveChatCommand";
 import {
@@ -49,6 +48,7 @@ import {
 import { UpdateLiveChatPollAction_01 } from "../fixture/updateLiveChatPollAction";
 import { ShowLiveChatActionPanelAction_01 } from "../fixture/showLiveChatActionPanelAction";
 import { CloseLiveChatActionPanelAction_01 } from "../fixture/closeLiveChatActionPanelAction";
+import { ChannelId } from "youtube-live-scraper";
 
 beforeEach(() => {
   jest.useFakeTimers();

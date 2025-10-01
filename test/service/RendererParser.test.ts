@@ -1,4 +1,4 @@
-import { ChannelId } from "../../src/core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 import {
   parseLiveChatMembershipItemRenderer,
