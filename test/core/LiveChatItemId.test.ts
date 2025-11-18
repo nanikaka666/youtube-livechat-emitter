@@ -1,10 +1,12 @@
 import { LiveChatItemId } from "../../src/core/LiveChatItemId";
 
 describe("valid cases", () => {
-  test("create instance successfully", () => {
-    const id = "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJYzBr";
-    const actual = new LiveChatItemId(id);
-    expect(actual.id).toEqual(id);
+  test.each([
+    "ChwKGkNMREs2Tk9FMTR3REZjalR3Z1FkNVRJYzBr",
+    "Ci8KLUNMU2VxYURxMTVBREZhbEwtd1FkcDJVd0JBLUxveU1lc0lELTM1MjY4NzE1OA%3D%3D", // 72 characters case
+  ])("create instance successfully", (input) => {
+    const actual = new LiveChatItemId(input);
+    expect(actual.id).toEqual(input);
   });
 });
 
